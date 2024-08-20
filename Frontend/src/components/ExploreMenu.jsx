@@ -37,18 +37,16 @@ const ExploreMenu = ({ category, setCategory }) => {
                 Explore our diverse menu to find the perfect dish for your taste. Whether you are in the mood for something adventurous or prefer a classic favorite, our descriptions will guide you to a choice that satisfies your cravings and dietary preferences.
             </p>
             <div className="explore-menu-list">
-                {categories.map((item, index) => {
-                    return (
-                        <div
-                            key={index}
-                            onClick={() => setCategory(prev => prev === item.name ? "All" : item.name)}
-                            className='explore-menu-list-items'
-                        >
-                            <img className={category === item.name ? "active" : ""} src={`${url}/images/${item.image}`} alt="" />
-                            <p>{item.name}</p>
-                        </div>
-                    )
-                })}
+                {categories.map((item, index) => (
+                    <div
+                        key={index}
+                        onClick={() => setCategory(prev => prev === item.name ? "All" : item.name)}
+                        className='explore-menu-list-items'
+                    >
+                        <img className={category === item.name ? "active" : ""} src={item.image} alt={item.name} />
+                        <p>{item.name}</p>
+                    </div>
+                ))}
             </div>
             <hr />
         </div>

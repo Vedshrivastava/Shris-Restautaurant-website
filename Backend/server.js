@@ -8,6 +8,10 @@ import cart from "./routes/cart.js";
 import category from "./routes/category.js";
 import order from "./routes/Order.js";
 import review from "./routes/review.js";
+import cloudinary from 'cloudinary';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const app = express()
 const port = 4000
@@ -17,6 +21,12 @@ app.use(cors())
 
 connectDB(process.env.MONGO_URI)
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET
+  });
 
 app.use('/api/food', food);
 app.use('/api/user', user);

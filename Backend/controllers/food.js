@@ -1,23 +1,30 @@
-// controllers/foodController.js
 import Food from "../models/food.js";
+import cloudinary from 'cloudinary';
 import fs from 'fs';
-import path from 'path';
 
-// Add food item
 const addFood = async (req, res) => {
     console.log('Request body:', req.body);
 
-    const imageFilename = req.file ? req.file.filename : '';
-
-    const food = new Food({
-        name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-        category: req.body.category,
-        image: imageFilename
-    });
-
     try {
+        let imageUrl = '';
+
+        if (req.file) {
+            const result = await cloudinary.v2.uploader.upload(req.file.path, {
+                folder: 'food_images'
+            });
+            imageUrl = result.secure_url;
+
+            fs.unlinkSync(req.file.path);
+        }
+
+        const food = new Food({
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            category: req.body.category,
+            image: imageUrl
+        });
+
         await food.save();
         res.json({ success: true, message: 'Food Added' });
     } catch (error) {
@@ -26,7 +33,6 @@ const addFood = async (req, res) => {
     }
 };
 
-// List all food items
 const listFood = async (req, res) => {
     try {
         const foods = await Food.find({});
@@ -37,7 +43,6 @@ const listFood = async (req, res) => {
     }
 };
 
-// Remove food item
 const removeFood = async (req, res) => {
     const { _id } = req.body;
 
@@ -48,13 +53,11 @@ const removeFood = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Food not found' });
         }
 
-        // Delete the image from the server
-        const imagePath = path.join('uploads', food.image);
-        fs.unlink(imagePath, (err) => {
-            if (err) console.error('Error deleting image:', err);
-        });
+        if (food.image) {
+            const publicId = food.image.split('/').pop().split('.')[0];
+            await cloudinary.v2.uploader.destroy(`food_images/${publicId}`);
+        }
 
-        // Delete the food item from the database
         await Food.findByIdAndDelete(_id);
         res.json({ success: true, message: 'Food Removed' });
     } catch (error) {
@@ -63,12 +66,11 @@ const removeFood = async (req, res) => {
     }
 };
 
-// Get reviews for a specific food item
 const getReviewList = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const food = await Food.findById(id).populate('reviews'); // Populate reviews
+        const food = await Food.findById(id).populate('reviews'); 
         if (!food) {
             return res.status(404).json({ success: false, message: 'Food not found' });
         }
