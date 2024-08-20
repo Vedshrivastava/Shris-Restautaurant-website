@@ -1,7 +1,6 @@
 .header {
     height: 34vw;
     margin: 30px auto;
-    background: url('/Users/vedshrivastava/Shris/Frontend/src/assets/frontend_assets/header_img.png');
     background-size: cover; /* Changed from contain to cover */
     background-repeat: no-repeat;
     background-position: center; /* Center the background image */

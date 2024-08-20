@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Header.css';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { assets } from '../assets/frontend_assets/assets';
 
 const Header = () => {
   const [menu, setMenu] = useState("home");
@@ -35,6 +36,7 @@ const Header = () => {
 
   return (
     <div className='header'>
+      <img src={assets.header_img} alt="" />
       <div className="header-contents">
         <h2>Order your favourite food here</h2>
         <p>
