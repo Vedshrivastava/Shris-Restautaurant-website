@@ -26,7 +26,7 @@ const Cart = () => {
               if (cartItems[item._id] > 0) {
                 return (
                   <div key={item._id} className="cart-items-title cart-items-item"> {/* Added key here */}
-                    <img src={url + "/images/" + item.image} alt="" />
+                    <img src={item.image} alt="" />
                     <p>{item.name}</p>
                     <p>₹{item.price}</p>
                     <div className="quantity-controls">
