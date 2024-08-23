@@ -2,7 +2,10 @@ import userModel from "../models/user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
-import { signTokenForConsumer, signTokenForAdmin } from "../middlewares/index.js";
+import {
+  signTokenForConsumer,
+  signTokenForAdmin,
+} from "../middlewares/index.js";
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -20,21 +23,25 @@ const loginUser = async (req, res) => {
     }
 
     let tokenData = {
-        id: user._id,
-        email:email,
-        name:user.name
+      id: user._id,
+      email: email,
+      name: user.name,
+    };
+    if (user.role == "USER") {
+      const token = signTokenForConsumer(tokenData);
+      return res.json({
+        success: true,
+        token,
+        userId: user._id, // Include userId in the response
+        message: "Logged in successfully",
+      });
     }
-
-    const token = signTokenForConsumer(tokenData);
-    return res.json({
-      success: true,
-      token,
-      userId: user._id, // Include userId in the response
-      message: "Logged in successfully",
-    });
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, message: "Some Internal Error Occurred" });
+    return res.json({
+      success: false,
+      message: "Some Internal Error Occurred",
+    });
   }
 };
 
@@ -79,7 +86,10 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.json({ success: false, message: "Some Internal Error Occurred" });
+    return res.json({
+      success: false,
+      message: "Some Internal Error Occurred",
+    });
   }
 };
 

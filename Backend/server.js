@@ -4,6 +4,7 @@ import {connectDB} from './config/db.js'
 import 'dotenv/config.js'
 import food from "./routes/food.js";
 import user from "./routes/user.js";
+import admin from "./routes/admin.js"
 import cart from "./routes/cart.js";
 import category from "./routes/category.js";
 import order from "./routes/Order.js";
@@ -20,16 +21,16 @@ app.use(express.json())
 app.use(cors())
 
 connectDB(process.env.MONGO_URI)
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
-cloudinary.v2.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.CLOUD_API_KEY,
-    api_secret: process.env.CLOUD_API_SECRET
-  });
+// cloudinary.v2.config({
+//     cloud_name: process.env.CLOUD_NAME,
+//     api_key: process.env.CLOUD_API_KEY,
+//     api_secret: process.env.CLOUD_API_SECRET
+//   });
 
 app.use('/api/food', food);
 app.use('/api/user', user);
+app.use('/api/admin',admin)
 app.use('/api/cart', cart);
 app.use('/api/order', order);
 app.use('/api/category', category);
