@@ -15,8 +15,8 @@ const PlaceOrder = () => {
     lastName: "",
     email: "",
     street: "",
-    city: "",
-    state: "",
+    city: "Nagod",
+    state: "Madhya Pradesh",
     zipcode: "",
     country: "",
     phone: ""
@@ -31,39 +31,39 @@ const PlaceOrder = () => {
   const placeOrder = async (event) => {
     event.preventDefault();
     const orderItems = food_list
-      .filter(item => cartItems[item._id] > 0)  
+      .filter(item => cartItems[item._id] > 0)
       .map(item => ({
         ...item,  // 
-        quantity: cartItems[item._id]  
+        quantity: cartItems[item._id]
       }));
-      console.log(orderItems);
+    console.log(orderItems);
 
-      let orderData = {
-        address: data,
-        items:orderItems,
-        amount:getTotalCartAmount() ? getTotalCartAmount() + 20 : 0
-      }
+    let orderData = {
+      address: data,
+      items: orderItems,
+      amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0
+    }
 
-      let response = await axios.post(url + "/api/order/place", orderData, {headers:{token}})
-      if(response.data.success) {
-        const {session_url} = response.data;
-        window.location.replace(session_url);
-      }
-      else{
-        alert("Error");
-      }
+    let response = await axios.post(url + "/api/order/place", orderData, { headers: { token } })
+    if (response.data.success) {
+      const { session_url } = response.data;
+      window.location.replace(session_url);
+    }
+    else {
+      alert("Error");
+    }
   }
 
   useEffect(() => {
-    if(!token){
+    if (!token) {
       navigate('/cart')
       toast.error("User Not SignedIn")
-    } else if(getTotalCartAmount() === 0) {
+    } else if (getTotalCartAmount() === 0) {
       navigate('/cart')
       toast.error("Cart Is Empty")
 
     }
-  },[token])
+  }, [token])
 
 
   return (
@@ -77,12 +77,8 @@ const PlaceOrder = () => {
         <input required name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='E-mail' />
         <input required name='street' onChange={onChangeHandler} value={data.street} type="text" placeholder='Street' />
         <div className="multi-fields">
-          <input required name='city' onChange={onChangeHandler} value={data.city} type="text" placeholder='City' />
-          <input required name='state' onChange={onChangeHandler} value={data.state} type="text" placeholder='State' />
-        </div>
-        <div className="multi-fields">
-          <input required name='zipcode' onChange={onChangeHandler} value={data.zipcode} type="text" placeholder='Zip code' />
-          <input required name='country' onChange={onChangeHandler} value={data.country} type="text" placeholder='Country' />
+          <input required name='city' onChange={onChangeHandler} value={data.city} type="text" placeholder='City' readOnly />
+          <input required name='state' onChange={onChangeHandler} value={data.state} type="text" placeholder='State' readOnly />
         </div>
         <input required name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='phone' />
       </div>

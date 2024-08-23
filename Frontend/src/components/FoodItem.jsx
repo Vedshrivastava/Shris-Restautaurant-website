@@ -12,7 +12,7 @@ const truncateDescription = (description, maxWords) => {
 };
 
 const FoodItem = ({ id, name, price, description, image }) => {
-    const { cartItems, addToCart, url, handleDecrement, handleIncrement } = useContext(StoreContext);
+    const { cartItems, addToCart, handleDecrement, handleIncrement } = useContext(StoreContext);
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -28,9 +28,9 @@ const FoodItem = ({ id, name, price, description, image }) => {
     }
 
     return (
-        <div onClick={handleClick} className='food-item'>
+        <div className='food-item'>
             <div className="food-item-img-container">
-                <img className='food-item-image' src={image} alt={name} />
+                <img onClick={handleClick} className='food-item-image' src={image} alt={name} />
                 {
                     !cartItems[id] ?
                         <img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} />
@@ -41,7 +41,7 @@ const FoodItem = ({ id, name, price, description, image }) => {
                         </div>
                 }
             </div>
-            <div className='food-item-info'>
+            <div onClick={handleClick} className='food-item-info'>
                 <div className='food-item-name-rating'>
                     <p>{name}</p>
                     <img src={assets.rating_starts} alt="Rating stars" />

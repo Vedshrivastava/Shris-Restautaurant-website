@@ -101,7 +101,7 @@ const Item = () => {
     return (
         <div className='item-container'>
             <div className='item-image-container'>
-                <img className='item-image' src={`${url}/images/${image}`} alt={name} />
+                <img className='item-image' src={image} alt={name} />
             </div>
             <div className='item-info'>
                 <h1>{name}</h1>
