@@ -28,7 +28,7 @@ const loginUser = async (req, res) => {
       name: user.name,
     };
     if (user.role == "USER") {
-      const token = signTokenForConsumer(tokenData);
+      const token = await signTokenForConsumer(tokenData);
       return res.json({
         success: true,
         token,
@@ -76,11 +76,10 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
-    const token = createToken(user._id);
+   
 
     return res.json({
       success: true,
-      token,
       userId: user._id, // Include userId in the response
       message: "Account Created",
     });
