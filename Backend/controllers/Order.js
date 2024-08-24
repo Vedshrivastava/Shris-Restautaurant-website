@@ -81,6 +81,8 @@ const userOrders = async (req, res) => {
     }
 }
 
+
+
 const listOrders = async (req, res) => {
     try {
         const orders = await orderModel.find({});
@@ -101,4 +103,4 @@ const updateStatus = async (req, res) => {
     }
 }
 
-export {placeOrder, verifyOrders, userOrders, listOrders, updateStatus}
+export {placeOrder, verifyOrders,userOrders,listOrders, updateStatus}

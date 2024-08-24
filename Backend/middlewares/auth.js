@@ -7,7 +7,7 @@ const authMiddleware = async (req, res, next) => {
         return res.status(401).json({ success: false, message: "Not Authorized" });
     }
     try {
-        const token_decode = jwt.verify(token, process.env.JWT_SECRET);
+        const token_decode = jwt.verify(token, process.env.JWT_KEY_CONSUMER);
         req.body.userId = token_decode.id;
         next();
     } catch (error) {
