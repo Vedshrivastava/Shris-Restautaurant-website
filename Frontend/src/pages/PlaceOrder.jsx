@@ -55,7 +55,7 @@ const PlaceOrder = () => {
     // Prepare the order data
     let orderData = {
       userId: localStorage.getItem("userId"),
-      address: data, // The customer's address data
+      address: data,
       items: orderItems,
       amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0,
       customer: {

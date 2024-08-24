@@ -1,14 +1,14 @@
 import express from 'express'
-import authMiddleware from '../middlewares/auth.js'
+import {signTokenForConsumer} from '../middlewares/index.js'
 import { placeOrder, verifyOrders, userOrders, listOrders, updateStatus } from '../controllers/Order.js';
 
 const order = express.Router()
 
-order.post('/place', authMiddleware, placeOrder);
+order.post('/place', signTokenForConsumer, placeOrder);
 
 order.post('/verify', verifyOrders)
 
-order.post('/user-orders', authMiddleware, userOrders)
+order.post('/user-orders', signTokenForConsumer, userOrders)
 
 order.get('/list', listOrders)
 
