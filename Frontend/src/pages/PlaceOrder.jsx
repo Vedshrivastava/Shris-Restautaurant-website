@@ -4,9 +4,10 @@ import { StoreContext } from "../context/StoreContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { loadStripe } from "@stripe/stripe-js";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, food_list, cartItems, url } =
+  const { getTotalCartAmount, token,user, food_list, cartItems, url } =
     useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -30,36 +31,75 @@ const PlaceOrder = () => {
 
   const placeOrder = async (event) => {
     event.preventDefault();
+
+    // Initialize Stripe with your public key
+    const stripe = await loadStripe(
+      "pk_test_51Ob6YWSEU0XhnlPBg5ELZAlsGvcNqdGPIBJjpn2guyNNf1bcXzoZEBjZvrnBLwTa4yxXRyWhYVI3dNkX2UDwzKHk00RKSzSnSx"
+    );
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // if (!user) {
+    //   alert("User is not logged in");
+    //   return;
+    // }
+
+    // Create the order items list
     const orderItems = food_list
       .filter((item) => cartItems[item._id] > 0)
       .map((item) => ({
-        ...item, //
+        ...item,
         quantity: cartItems[item._id],
       }));
     console.log(orderItems);
 
+    // Prepare the order data
     let orderData = {
-      address: data,
+      userId: localStorage.getItem("userId"),
+      address: data, // The customer's address data
       items: orderItems,
       amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0,
+      customer: {
+        name:"Eklavya Singh Parihar",
+        address: {
+          line1: data.street,
+          city: data.city,
+          postal_code: 452003,
+          state: data.state,
+          country: 'IN',
+        },
+      },
     };
-
     try {
+      // Send order data to your backend
       let response = await axios.post(url + "/api/order/place", orderData, {
         headers: { token },
       });
+
       if (response.data.success) {
+        // Retrieve the Stripe session ID from the backend response
         const { session_url } = response.data;
-        window.location.replace(session_url); // Redirect to the payment page
+
+        // Redirect to the Stripe checkout page
+        const result = await stripe.redirectToCheckout({
+          sessionId: session_url,
+        });
+
+        if (result.error) {
+          // Handle any errors that occurred during redirection
+          console.error(result.error.message);
+          alert("An error occurred during payment processing.");
+        }
       } else {
-        alert("Error");
+        // Handle the case where the order placement fails on the backend
+        alert("Error placing order.");
+        console.log(response.data.message);
       }
     } catch (error) {
+      // Handle any errors that occur during the order placement or payment initiation
       console.error("Error placing order:", error);
-      alert("An error occurred while placing the order.");
+      alert("An error occurred. Please try again.");
     }
   };
-
   useEffect(() => {
     if (!token) {
       navigate("/cart");
