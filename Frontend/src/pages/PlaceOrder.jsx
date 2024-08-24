@@ -39,6 +39,7 @@ const PlaceOrder = () => {
     console.log(orderItems);
 
     let orderData = {
+      userId: localStorage.getItem("userId"),
       address: data,
       items: orderItems,
       amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0,
