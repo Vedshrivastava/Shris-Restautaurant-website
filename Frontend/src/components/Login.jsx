@@ -41,6 +41,8 @@ const Login = ({ setShowLogin }) => {
                 setToken(response.data.token);
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("userId", response.data.userId); 
+                localStorage.setItem("userName", response.data.name);
+                localStorage.setItem("userEmail", response.data.email);
                 setUserId(response.data.userId); 
                 toast.success(response.data.message);
 
