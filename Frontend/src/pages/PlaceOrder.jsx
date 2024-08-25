@@ -34,7 +34,7 @@ const PlaceOrder = () => {
 
     // Initialize Stripe with your public key
     const stripe = await loadStripe(
-      "pk_test_51Ob6YWSEU0XhnlPBg5ELZAlsGvcNqdGPIBJjpn2guyNNf1bcXzoZEBjZvrnBLwTa4yxXRyWhYVI3dNkX2UDwzKHk00RKSzSnSx"
+      import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
     );
     const user = JSON.parse(localStorage.getItem("user"));
 
