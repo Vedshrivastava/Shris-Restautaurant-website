@@ -10,11 +10,15 @@ import {toast} from 'react-toastify'
 const Navbar = ({ setShowLogin }) => {
     const [menu, setMenu] = useState("home");
     const navigate = useNavigate();
-    const { getTotalCartAmount, token, setToken, setUserId } = useContext(StoreContext);
+    const { getTotalCartAmount, token, setToken, setUserId, setUserName, setUserEmail } = useContext(StoreContext);
 
     const logout = () => {
         setToken(null); 
         setUserId(null); 
+        setUserEmail(null);
+        setUserName(null)
+        localStorage.removeItem("userEmail")
+        localStorage.removeItem("userName")
         localStorage.removeItem("token"); 
         localStorage.removeItem("userId"); 
         toast.success('Logged out successfully'); 
