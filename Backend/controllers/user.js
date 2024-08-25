@@ -8,42 +8,46 @@ import {
 } from "../middlewares/index.js";
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await userModel.findOne({ email });
-
-    if (!user) {
-      return res.json({ success: false, message: "The user does not exist" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.json({ success: false, message: "Wrong password" });
-    }
-
-    let tokenData = {
-      id: user._id,
-      email: email,
-      name: user.name,
-    };
-    if (user.role == "USER") {
-      const token = await signTokenForConsumer(tokenData);
-      return res.json({
-        success: true,
-        token,
-        userId: user._id, // Include userId in the response
-        message: "Logged in successfully",
+    const { email, password } = req.body;
+    try {
+      const user = await userModel.findOne({ email });
+  
+      if (!user) {
+        return res.status(401).json({ success: false, message: "The user does not exist" });
+      }
+  
+      const isMatch = await bcrypt.compare(password, user.password);
+  
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: "Wrong password" });
+      }
+  
+      let tokenData = {
+        id: user._id,
+        email: email,
+        name: user.name,
+      };
+  
+      if (user.role === "USER") {
+        const token = await signTokenForConsumer(tokenData);
+        return res.status(200).json({
+          success: true,
+          token,
+          userId: user._id,
+          name: user.name, // Optionally include the user's name
+          email: user.email, // Optionally include the user's email
+          message: "Logged in successfully",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: "Some Internal Error Occurred",
       });
     }
-  } catch (error) {
-    console.log(error);
-    return res.json({
-      success: false,
-      message: "Some Internal Error Occurred",
-    });
-  }
-};
+  };
+  
 
 const registerUser = async (req, res) => {
   const { name, password, email } = req.body;
