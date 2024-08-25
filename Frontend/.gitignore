@@ -1,4 +1,7 @@
-# Logs
+/Backend/.env
+/Backend/node_modules
+/Frontend/node_modules
+/Admin/node_modules# Logs
 logs
 *.log
 npm-debug.log*
