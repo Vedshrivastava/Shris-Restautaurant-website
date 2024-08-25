@@ -6,9 +6,6 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const url = "http://localhost:4000";
 
-  let userName = localStorage.getItem("userName");
-  let userEmail =  localStorage.getItem("userEmail");
-
   const [cartItems, setCartItems] = useState(() => {
     try {
       const savedCartItems = localStorage.getItem("cartItems");
@@ -22,6 +19,12 @@ const StoreContextProvider = (props) => {
   const [food_list, setFood_List] = useState([]);
   const [userId, setUserId] = useState(
     () => localStorage.getItem("userId") || ""
+  );
+  const [userEmail, setUserEmail] = useState(
+    () => localStorage.getItem("userEmail") || ""
+  );
+  const [userName, setUserName] = useState(
+    () => localStorage.getItem("userName") || ""
   );
 
   const addToCart = async (itemId) => {
@@ -138,12 +141,20 @@ const StoreContextProvider = (props) => {
       await fetchFoodList();
       const savedToken = localStorage.getItem("token");
       const savedUserId = localStorage.getItem("userId");
+      const savedUserEmail = localStorage.getItem("userEmail");
+      const savedUserName = localStorage.getItem("userName");
       if (savedToken) {
         setToken(savedToken);
         await loadCartData(savedToken);
       }
       if (savedUserId) {
         setUserId(savedUserId);
+      }
+      if (savedUserId) {
+        setUserEmail(savedUserEmail);
+      }
+      if (savedUserName) {
+        setUserId(savedUserName);
       }
     }
     loadData();
@@ -160,6 +171,8 @@ const StoreContextProvider = (props) => {
     setToken,
     setUserId,
     setCartItems,
+    setUserEmail,
+    setUserName,
     addToCart,
     removeFromCart,
     getTotalCartAmount,
