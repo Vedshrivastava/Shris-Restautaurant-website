@@ -1,5 +1,4 @@
 import userModel from "../models/user.js";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import {
@@ -36,6 +35,7 @@ const loginUser = async (req, res) => {
           userId: user._id,
           name: user.name, // Optionally include the user's name
           email: user.email, // Optionally include the user's email
+          cartItems: user.cartItems,
           message: "Logged in successfully",
         });
       }

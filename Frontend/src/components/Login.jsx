@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom'; 
 
 const Login = ({ setShowLogin }) => {
-    const { url, setToken, setUserId, setUserName, setUserEmail } = useContext(StoreContext);
+    const { url, setToken, setUserId, setUserName, setUserEmail, setCartItems } = useContext(StoreContext);
     const [currState, setCurrState] = useState("Login");
     const [data, setData] = useState({
         name: "",
