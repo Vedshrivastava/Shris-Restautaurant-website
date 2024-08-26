@@ -1,24 +1,30 @@
 import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
-    comment: {type:String, require:true},
+    comment: { 
+        type: String, 
+        required: true 
+    },
     rating: {
         type: Number,
         min: 1,
         max: 5,
-        require: true
+        required: true
     },
     createdAt: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     author: {
-        type: Object,
-        ref: "user",
+        type: mongoose.Schema.Types.ObjectId,  // Storing the reference to the user as ObjectId
+        ref: "User",  // Reference to the User model
+        required: true
+    },
+    by: {
+        type: String,  // Storing the username as a string
+        required: true
     }
-})
+});
 
-
-const reviewModel = mongoose.models.reviews || mongoose.model("review", reviewSchema)
+const reviewModel = mongoose.models.Review || mongoose.model("Review", reviewSchema);
 export default reviewModel;
-

@@ -72,7 +72,7 @@ const PlaceOrder = () => {
     try {
       // Send order data to your backend
       let response = await axios.post(url + "/api/order/place", orderData, {
-        headers: { token },
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {

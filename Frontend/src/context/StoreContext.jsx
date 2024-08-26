@@ -150,11 +150,11 @@ const StoreContextProvider = (props) => {
       if (savedUserId) {
         setUserId(savedUserId);
       }
-      if (savedUserId) {
+      if (savedUserEmail) {
         setUserEmail(savedUserEmail);
       }
       if (savedUserName) {
-        setUserId(savedUserName);
+        setUserName(savedUserName);
       }
     }
     loadData();

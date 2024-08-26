@@ -5,7 +5,7 @@ import { StoreContext } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
 
 const Item = () => {
-    const { token, url, userId } = useContext(StoreContext);
+    const { token, url, userId, userName } = useContext(StoreContext);
     const location = useLocation();
     const { id, name, price, description, image } = location.state || {};
 
@@ -33,13 +33,14 @@ const Item = () => {
         try {
             const response = await axios.post(
                 `${url}/api/review/add`,
-                { 
-                    userId,
-                    foodId: id, 
-                    comment: newReview.comment, 
+                {
+                    username: userName,
+                    userid: userId,
+                    foodId: id,
+                    comment: newReview.comment,
                     rating: newReview.rating,
                 },
-                { headers: { token } }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setReviews([...reviews, response.data.review]);
             setNewReview({ comment: '', rating: 1 });
@@ -56,7 +57,7 @@ const Item = () => {
             const response = await axios.put(
                 `${url}/api/review/update/${editReview._id}`,
                 editReview,
-                { headers: { token } }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setReviews(reviews.map(review => review._id === editReview._id ? response.data.review : review));
             setEditReview(null);
@@ -67,7 +68,9 @@ const Item = () => {
 
     const handleDeleteReview = async (reviewId) => {
         try {
-            await axios.delete(`${url}/api/review/delete/${reviewId}`, { headers: { token } });
+            await axios.delete(`${url}/api/review/delete/${reviewId}`, {
+                headers: { Authorization: `Bearer ${token}` }  // Correct way to pass token
+            });
             setReviews(reviews.filter(review => review._id !== reviewId));
         } catch (error) {
             console.error("Error deleting review", error);
@@ -75,15 +78,19 @@ const Item = () => {
     };
 
     const handleStarClick = (rating) => {
-        setNewReview({ ...newReview, rating });
+        if (editReview) {
+            setEditReview({ ...editReview, rating });
+        } else {
+            setNewReview({ ...newReview, rating });
+        }
     };
 
     const renderStars = (rating, editable = true) => {
         return (
             <div className='star-rating'>
                 {[1, 2, 3, 4, 5].map(star => (
-                    <span 
-                        key={star} 
+                    <span
+                        key={star}
                         className={`star ${star <= rating ? 'filled' : ''} ${editable ? 'clickable' : ''}`}
                         onClick={() => editable && handleStarClick(star)}
                     >
@@ -110,23 +117,25 @@ const Item = () => {
             </div>
             <div className='reviews-section'>
                 {/* Add Review Form */}
-                <form onSubmit={handleAddReview} className='review-form'>
-                    <h2>Add a Review</h2>
-                    <label>
-                        Rating:
-                        <div className='star-rating'>
-                            {renderStars(newReview.rating)}
-                        </div>
-                    </label>
-                    <label>
-                        Comment:
-                        <textarea
-                            value={newReview.comment}
-                            onChange={e => setNewReview({ ...newReview, comment: e.target.value })}
-                        />
-                    </label>
-                    <button type='submit'>Submit Review</button>
-                </form>
+                {!editReview && (
+                    <form onSubmit={handleAddReview} className='review-form'>
+                        <h2>Add a Review</h2>
+                        <label>
+                            Rating:
+                            <div className='star-rating'>
+                                {renderStars(newReview.rating)}
+                            </div>
+                        </label>
+                        <label>
+                            Comment:
+                            <textarea
+                                value={newReview.comment}
+                                onChange={e => setNewReview({ ...newReview, comment: e.target.value })}
+                            />
+                        </label>
+                        <button type='submit'>Submit Review</button>
+                    </form>
+                )}
 
                 {/* Edit Review Form */}
                 {editReview && (
@@ -156,9 +165,9 @@ const Item = () => {
                     <div className='reviews-list'>
                         {reviews.map(review => (
                             <div key={review._id} className='review-item'>
-                                <p><strong>Rating:</strong> {renderStars(review.rating, false)}</p>
+                                <div><strong>Rating:</strong> {renderStars(review.rating, false)}</div>
                                 <p><strong>Comment:</strong> {review.comment}</p>
-                                {/* Conditionally render buttons based on ownership */}
+                                <p><strong>by </strong> {review.by}</p>
                                 {review.author === userId && (
                                     <>
                                         <button onClick={() => setEditReview(review)}>Edit</button>

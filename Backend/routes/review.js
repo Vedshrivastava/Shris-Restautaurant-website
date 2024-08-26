@@ -6,7 +6,7 @@ const review = express.Router();
 
 review.post('/add', authMiddleware, addReview);
 
-review.put('/edit/:reviewId', authMiddleware, editReview);
+review.put('/update/:reviewId', authMiddleware, editReview);
 
 review.delete('/delete/:reviewId', authMiddleware, deleteReview);
 

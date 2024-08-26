@@ -9,7 +9,6 @@ import cart from "./routes/cart.js";
 import category from "./routes/category.js";
 import order from "./routes/Order.js";
 import review from "./routes/review.js";
-import cloudinary from 'cloudinary';
 import dotenv from 'dotenv'
 
 dotenv.config()
