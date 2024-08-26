@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import '../styles/Cart.css';
 import { StoreContext } from '../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const Cart = () => {
   const { cartItems = {}, food_list = [], removeFromCart, getTotalCartAmount, url, handleDecrement, handleIncrement } = useContext(StoreContext);
@@ -9,6 +11,17 @@ const Cart = () => {
 
   const totalAmount = getTotalCartAmount() || 0;
   const deliveryFee = totalAmount ? 20 : 0;
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <>
@@ -40,7 +53,15 @@ const Cart = () => {
                     </div>
                     <p className='total'>₹{item.price * quantity}</p>
                     <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
-                    <hr />
+                    {windowWidth <= 700 ? (
+                <>
+                  <hr />
+                  <hr />
+                  <hr />
+                </>
+              ) : (
+                <></>
+              )}
                   </div>
                 );
               }
