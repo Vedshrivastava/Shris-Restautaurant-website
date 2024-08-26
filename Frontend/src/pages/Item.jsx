@@ -113,7 +113,7 @@ const Item = () => {
             <div className='item-info'>
                 <h1>{name}</h1>
                 <p>{description}</p>
-                <p>₹{price}</p>
+                <p className='price'>₹{price}</p>
             </div>
             <div className='reviews-section'>
                 {/* Add Review Form */}
