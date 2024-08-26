@@ -43,6 +43,8 @@ const Login = ({ setShowLogin }) => {
                 localStorage.setItem("userId", response.data.userId); 
                 localStorage.setItem("userName", response.data.name);
                 localStorage.setItem("userEmail", response.data.email);
+                localStorage.setItem("cartItems", response.data.cartItems);
+                setCartItems(response.data.cartItems);
                 setUserId(response.data.userId); 
                 setUserName(response.data.name);
                 setUserEmail(response.data.email);

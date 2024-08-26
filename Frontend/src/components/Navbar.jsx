@@ -10,13 +10,15 @@ import {toast} from 'react-toastify'
 const Navbar = ({ setShowLogin }) => {
     const [menu, setMenu] = useState("home");
     const navigate = useNavigate();
-    const { getTotalCartAmount, token, setToken, setUserId, setUserName, setUserEmail } = useContext(StoreContext);
+    const { getTotalCartAmount, token, setToken, setUserId, setUserName, setUserEmail, setCartItems } = useContext(StoreContext);
 
     const logout = () => {
         setToken(null); 
         setUserId(null); 
         setUserEmail(null);
-        setUserName(null)
+        setUserName(null);
+        setCartItems({});
+        localStorage.removeItem("cartItems")
         localStorage.removeItem("userEmail")
         localStorage.removeItem("userName")
         localStorage.removeItem("token"); 
