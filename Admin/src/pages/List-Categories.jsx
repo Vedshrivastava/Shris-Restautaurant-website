@@ -51,7 +51,7 @@ const ListCategory = ({ url }) => {
                 </div>
                 {categories.map((category) => (
                     <div key={category._id} className="category-list-table-format">
-                        <img src={`${url}/images/` + category.image} alt={category.name} />
+                        <img src={category.image} alt={category.name} />
                         <p>{category.name}</p>
                         <p onClick={() => removeCategory(category._id)} className='cursor'>X</p>
                     </div>

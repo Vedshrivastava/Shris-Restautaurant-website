@@ -15,13 +15,149 @@ const StoreContextProvider = (props) => {
       return {};
     }
   });
+
   const [token, setToken] = useState(() => localStorage.getItem("token") || "");
   const [food_list, setFood_List] = useState([]);
-  const [userId, setUserId] = useState(
-    () => localStorage.getItem("userId") || ""
-  );
+  const [userId, setUserId] = useState(() => localStorage.getItem("userId") || "");
+  const [userEmail, setUserEmail] = useState(() => localStorage.getItem("userEmail") || "");
+  const [userName, setUserName] = useState(() => localStorage.getItem("userName") || "");
 
-  const addToCart = async (itemId) => {
+  const [operationType, setOperationType] = useState(null);
+  const [currentItemId, setCurrentItemId] = useState(null);
+  const [currentQuantity, setCurrentQuantity] = useState(null);
+
+  const addToCartOnServer = async (itemId) => {
+    if (token) {
+      try {
+        await axios.post(
+          `${url}/api/cart/add`,
+          { itemId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (error) {
+        console.error("Error adding item to cart:", error);
+      }
+    } else {
+      console.log("No token for cart");
+    }
+  };
+
+  const updateCartItemOnServer = async (id, quantity) => {
+    if (token) {
+      try {
+        await axios.post(
+          `${url}/api/cart/update`,
+          { itemId: id, quantity },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (error) {
+        console.error("Error updating item quantity:", error);
+      }
+    } else {
+      console.log("No token for cart");
+    }
+  };
+
+  const removeFromCartOnServer = async (itemId) => {
+    if (token) {
+      try {
+        await axios.delete(`${url}/api/cart/remove`, {
+          data: { itemId },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        console.error("Error removing item from cart:", error);
+      }
+    } else {
+      console.log("No token for cart");
+    }
+  };
+
+  // Fetch food list
+  useEffect(() => {
+    const fetchFoodList = async () => {
+      try {
+        const response = await axios.get(`${url}/api/food/list`);
+        setFood_List(response.data.data);
+      } catch (error) {
+        console.error("Error fetching food list:", error);
+      }
+    };
+    fetchFoodList();
+  }, []);
+
+  // Load cart data
+  useEffect(() => {
+    const loadCartData = async (token) => {
+      try {
+        const response = await axios.get(`${url}/api/cart/get`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 200) {
+          const cartData = response.data.cartData;
+          if (cartData) {
+            setCartItems(cartData);
+            localStorage.setItem("cartItems", JSON.stringify(cartData));
+          } else {
+            throw new Error("Cart data is empty");
+          }
+        } else {
+          throw new Error(`Error: Received status code ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Error loading cart data:", error.message);
+        if (error.response && error.response.status === 401) {
+          alert("Your session has expired. Please log in again.");
+        }
+      }
+    };
+
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) {
+      setToken(savedToken);
+      loadCartData(savedToken);
+    }
+  }, [token]);
+
+  // Handle adding items
+  useEffect(() => {
+    if (operationType === 'add' && currentItemId) {
+      const addItem = async () => {
+        await addToCartOnServer(currentItemId);
+        setOperationType(null);
+        setCurrentItemId(null);
+      };
+      addItem();
+    }
+  }, [operationType, currentItemId]);
+
+  // Handle updating items
+  useEffect(() => {
+    if (operationType === 'update' && currentItemId !== null && currentQuantity !== null) {
+      const updateItem = async () => {
+        await updateCartItemOnServer(currentItemId, currentQuantity);
+        setOperationType(null);
+        setCurrentItemId(null);
+        setCurrentQuantity(null);
+      };
+      updateItem();
+    }
+  }, [operationType, currentItemId, currentQuantity]);
+
+  // Handle removing items
+  useEffect(() => {
+    if (operationType === 'remove' && currentItemId) {
+      const removeItem = async () => {
+        await removeFromCartOnServer(currentItemId);
+        setOperationType(null);
+        setCurrentItemId(null);
+      };
+      removeItem();
+    }
+  }, [operationType, currentItemId]);
+
+  const addToCart = (itemId) => {
     setCartItems((prev) => {
       const newCartItems = { ...prev };
       if (!newCartItems[itemId]) {
@@ -30,59 +166,40 @@ const StoreContextProvider = (props) => {
         newCartItems[itemId] += 1;
       }
       localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+      setOperationType('add');
+      setCurrentItemId(itemId);
       return newCartItems;
     });
-
-    if (token) {
-      await axios.post(
-        url + "/api/cart/add",
-        { itemId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    }
   };
 
   const handleIncrement = (id) => {
-    updateCartItemQuantity(id, cartItems[id] + 1);
+    setCartItems((prevItems) => {
+      const updatedItems = { ...prevItems, [id]: (prevItems[id] || 0) + 1 };
+      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      setOperationType('update');
+      setCurrentItemId(id);
+      setCurrentQuantity(updatedItems[id]);
+      return updatedItems;
+    });
   };
 
   const handleDecrement = (id) => {
-    if (cartItems[id] > 1) {
-      updateCartItemQuantity(id, cartItems[id] - 1);
-    } else {
-      updateCartItemQuantity(id, cartItems[id] - 1);
-      removeFromCart(id);
-    }
-  };
-
-  const updateCartItemQuantity = async (id, quantity) => {
     setCartItems((prevItems) => {
-      const updatedItems = { ...prevItems, [id]: quantity };
-      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      const updatedItems = { ...prevItems };
+      if (updatedItems[id] > 1) {
+        updatedItems[id] -= 1;
+        localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+        setOperationType('update');
+        setCurrentItemId(id);
+        setCurrentQuantity(updatedItems[id]);
+      } else {
+        delete updatedItems[id];
+        localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+        setOperationType('remove');
+        setCurrentItemId(id);
+      }
       return updatedItems;
     });
-
-    await axios.post(
-      `${url}/api/cart/update`,
-      { itemId: id, quantity },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  };
-
-  const removeFromCart = async (itemId) => {
-    setCartItems((prev) => {
-      const newCartItems = { ...prev };
-      delete newCartItems[itemId];
-      localStorage.setItem("cartItems", JSON.stringify(newCartItems));
-      return newCartItems;
-    });
-
-    if (token) {
-      await axios.delete(url + "/api/cart/remove", {
-        data: { itemId },
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    }
   };
 
   const getTotalCartAmount = () => {
@@ -98,53 +215,27 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
-  const fetchFoodList = async () => {
-    const response = await axios.get(url + "/api/food/list");
-    setFood_List(response.data.data);
+  const removeFromCart = (itemId) => {
+    setCartItems((prev) => {
+      const newCartItems = { ...prev };
+      delete newCartItems[itemId];
+      localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+      setOperationType('remove');
+      setCurrentItemId(itemId);
+      return newCartItems;
+    });
   };
 
-  const loadCartData = async (token) => {
-    try {
-      const response = await axios.get(url + "/api/cart/get", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 200) {
-        const cartData = response.data.cartData;
-
-        if (cartData) {
-          setCartItems(cartData);
-          localStorage.setItem("cartItems", JSON.stringify(cartData));
-        } else {
-          throw new Error("Cart data is empty");
-        }
-      } else {
-        throw new Error(`Error: Received status code ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Error loading cart data:", error.message);
-
-      if (error.response && error.response.status === 401) {
-        alert("Your session has expired. Please log in again.");
-      }
-    }
+  const updateCartItemQuantity = (id, quantity) => {
+    setCartItems((prevItems) => {
+      const updatedItems = { ...prevItems, [id]: quantity };
+      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      setOperationType('update');
+      setCurrentItemId(id);
+      setCurrentQuantity(quantity);
+      return updatedItems;
+    });
   };
-
-  useEffect(() => {
-    async function loadData() {
-      await fetchFoodList();
-      const savedToken = localStorage.getItem("token");
-      const savedUserId = localStorage.getItem("userId");
-      if (savedToken) {
-        setToken(savedToken);
-        await loadCartData(savedToken);
-      }
-      if (savedUserId) {
-        setUserId(savedUserId);
-      }
-    }
-    loadData();
-  }, []);
 
   const contextValue = {
     food_list,
@@ -152,9 +243,13 @@ const StoreContextProvider = (props) => {
     url,
     token,
     userId,
+    userName,
+    userEmail,
     setToken,
     setUserId,
     setCartItems,
+    setUserEmail,
+    setUserName,
     addToCart,
     removeFromCart,
     getTotalCartAmount,

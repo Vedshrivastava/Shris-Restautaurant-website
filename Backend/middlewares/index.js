@@ -1,18 +1,27 @@
 import JWT from "jsonwebtoken";
 
 const signTokenForConsumer = async (user) => {
+  if (!user || !user.id) {
+    console.error('Invalid user object:', user);  // Debugging: Check if user or user.id is undefined
+    return null;
+  }
+
+  console.log("userID: ---", user.id)
+
   return JWT.sign(
     {
-      id: user._id,
+      id: user.id.toString(),
       name: user.name,
       email: user.email,
     },
     process.env.JWT_KEY_CONSUMER,
     {
-      expiresIn: "1d",
+      expiresIn: '1d',
     }
   );
 };
+
+
 
 const signTokenForAdmin = async (user) => {
   return JWT.sign(

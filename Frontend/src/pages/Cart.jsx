@@ -2,10 +2,26 @@ import React, { useContext } from 'react';
 import '../styles/Cart.css';
 import { StoreContext } from '../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const Cart = () => {
-  const { cartItems, food_list, removeFromCart, getTotalCartAmount, url, handleDecrement, handleIncrement } = useContext(StoreContext);
+  const { cartItems = {}, food_list = [], removeFromCart, getTotalCartAmount, url, handleDecrement, handleIncrement } = useContext(StoreContext);
   const navigate = useNavigate();
+
+  const totalAmount = getTotalCartAmount() || 0;
+  const deliveryFee = totalAmount ? 20 : 0;
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <>
@@ -23,20 +39,29 @@ const Cart = () => {
           <hr />
           {
             food_list.map((item) => {
-              if (cartItems[item._id] > 0) {
+              const quantity = cartItems[item._id] || 0; // Default to 0 if item is not in cart
+              if (quantity > 0) {
                 return (
-                  <div key={item._id} className="cart-items-title cart-items-item"> {/* Added key here */}
+                  <div key={item._id} className="cart-items-title cart-items-item">
                     <img src={item.image} alt="" />
                     <p>{item.name}</p>
                     <p>₹{item.price}</p>
                     <div className="quantity-controls">
                       <button onClick={() => handleDecrement(item._id)}>-</button>
-                      <p>{cartItems[item._id]}</p>
+                      <p>{quantity}</p>
                       <button onClick={() => handleIncrement(item._id)}>+</button>
                     </div>
-                    <p className='total'>₹{item.price * cartItems[item._id]}</p>
+                    <p className='total'>₹{item.price * quantity}</p>
                     <p onClick={() => removeFromCart(item._id)} className='cross'>x</p>
-                    <hr />
+                    {windowWidth <= 700 ? (
+                <>
+                  <hr />
+                  <hr />
+                  <hr />
+                </>
+              ) : (
+                <></>
+              )}
                   </div>
                 );
               }
@@ -51,17 +76,17 @@ const Cart = () => {
         </div>
         <div className="cart-total-details">
           <p>Subtotal</p>
-          <p>₹{getTotalCartAmount()}</p>
+          <p>₹{totalAmount}</p>
         </div>
         <hr />
         <div className="cart-total-details">
           <p>Delivery Fee</p>
-          <p>₹{getTotalCartAmount() ? 20 : 0}</p>
+          <p>₹{deliveryFee}</p>
         </div>
         <hr />
         <div className="cart-total-details">
           <b>Total</b>
-          <b>₹{getTotalCartAmount() ? getTotalCartAmount() + 20 : 0}</b>
+          <b>₹{totalAmount + deliveryFee}</b>
         </div>
         <div className="button-container">
           <button onClick={() => navigate('/order')}>PROCEED TO CHECKOUT</button>

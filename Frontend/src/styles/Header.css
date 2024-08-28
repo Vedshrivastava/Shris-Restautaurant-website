@@ -46,35 +46,26 @@
     opacity: 0.8; /* Change opacity on hover */
     background-color: white;
 }
-@media (max-width: 1050px) {
-    .header-contents {
-        max-width: 45%;
+
+@media (max-width: 750px) {
+
+    .header-contents p {
+        display: none; 
     }
 }
 
-@media (max-width: 750px) {
-    .header {
-        height: 50vw; 
-        margin: 20px auto; 
-        border-radius: 6px;
-    }
-
-    .header-contents {
-        max-width: 80%; 
-        left: 5vw; 
-        bottom: 5%; 
-    }
-
-    .header-contents h2 {
-        font-size: max(6vw, 18px); 
-    }
+@media (max-width: 435px) {
 
     .header-contents p {
         display: none; 
     }
 
+    .header-contents h2 {
+        font-weight: 500;
+        color: white;
+        font-size: 3.8vw;
+    }
     .header-contents button {
-        padding: 2vw 4vw; 
-        font-size: max(1.5vw, 14px); 
+        font-size: 3.8vw
     }
 }

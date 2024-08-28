@@ -71,9 +71,15 @@ const PlaceOrder = () => {
     };
     try {
       // Send order data to your backend
+<<<<<<< HEAD
       let response = await axios.post(url + "/api/order/place", orderData
         // headers: { authorization: token }
       );
+=======
+      let response = await axios.post(url + "/api/order/place", orderData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+>>>>>>> 1239b45e459ee2dff6f5f1d05896eb3d31e68c20
 
       if (response.data.success) {
         // Retrieve the Stripe session ID from the backend response

@@ -12,7 +12,7 @@ const truncateDescription = (description, maxWords) => {
 };
 
 const FoodItem = ({ id, name, price, description, image }) => {
-    const { cartItems, addToCart, handleDecrement, handleIncrement } = useContext(StoreContext);
+    const { cartItems = {}, addToCart, handleDecrement, handleIncrement } = useContext(StoreContext);
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -27,16 +27,18 @@ const FoodItem = ({ id, name, price, description, image }) => {
         });
     }
 
+    const itemQuantity = cartItems[id] || 0; // Safely access cartItems[id]
+
     return (
         <div className='food-item'>
             <div className="food-item-img-container">
                 <img onClick={handleClick} className='food-item-image' src={image} alt={name} />
                 {
-                    !cartItems[id] ?
+                    itemQuantity === 0 ?
                         <img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} />
                         : <div className='food-item-counter'>
                             <img onClick={() => handleDecrement(id)} src={assets.remove_icon_red} />
-                            <p>{cartItems[id]}</p>
+                            <p>{itemQuantity}</p>
                             <img onClick={() => handleIncrement(id)} src={assets.add_icon_green} />
                         </div>
                 }

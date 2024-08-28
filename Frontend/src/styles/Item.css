@@ -39,14 +39,25 @@
     color: var(--base-color);
     margin-bottom: 10px;
     font-size: 2rem;
+    font-weight: 500;
   }
   
   .item-info p {
     color: var(--text-color);
     margin: 5px 0;
     font-size: 1.2rem;
+    font-weight: 400;
   }
   
+  .item-info .price{
+    margin-top: 15px;
+    color: var(--text-color);
+    font-weight: 500;
+    margin: 5px 0;
+    font-size: 2rem;
+    color: tomato;
+  }
+
   .reviews-section {
     width: 100%;
     max-width: 600px;
