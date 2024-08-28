@@ -4,7 +4,7 @@ import { placeOrder, verifyOrders, userOrders, listOrders, updateStatus } from '
 
 const order = express.Router()
 
-order.post('/place', signTokenForConsumer, placeOrder);
+order.post('/place',placeOrder);
 
 order.post('/verify', verifyOrders)
 
