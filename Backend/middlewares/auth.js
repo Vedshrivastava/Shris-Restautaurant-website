@@ -1,15 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const authMiddleware = async (req, res, next) => {
-<<<<<<< HEAD
     const { token } = req.headers.authorization;
-=======
-    // Extract token from Authorization header
-    const token = req.headers.authorization?.split(' ')[1];
-
-    console.log("Received token:", token);  // Log the token for debugging
-
->>>>>>> 1239b45e459ee2dff6f5f1d05896eb3d31e68c20
     if (!token) {
         return res.status(401).json({ success: false, message: "Not Authorized" });
     }
