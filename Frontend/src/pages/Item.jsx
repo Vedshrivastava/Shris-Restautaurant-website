@@ -3,6 +3,9 @@ import '../styles/Item.css';
 import axios from 'axios';
 import { StoreContext } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+
 
 const Item = () => {
     const { token, url, userId, userName } = useContext(StoreContext);
@@ -165,16 +168,24 @@ const Item = () => {
                     <div className='reviews-list'>
                         {reviews.map(review => (
                             <div key={review._id} className='review-item'>
+                            <div className='review-content'>
                                 <div><strong>Rating:</strong> {renderStars(review.rating, false)}</div>
                                 <p><strong>Comment:</strong> {review.comment}</p>
                                 <p><strong>by </strong> {review.by}</p>
-                                {review.author === userId && (
-                                    <>
-                                        <button onClick={() => setEditReview(review)}>Edit</button>
-                                        <button onClick={() => handleDeleteReview(review._id)}>Delete</button>
-                                    </>
-                                )}
                             </div>
+                            {review.author === userId && (
+                                <div className='review-actions'>
+                                <button className='edit-button' onClick={() => setEditReview(review)}>
+                                    <FontAwesomeIcon icon={faEdit} />
+                                </button>
+                                <button className='delete-button' onClick={() => handleDeleteReview(review._id)}>
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                            </div>
+                            
+                            )}
+                        </div>
+                        
                         ))}
                     </div>
                 ) : (

@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../styles/FoodItem.css';
 import { assets } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // Helper function to truncate description
 const truncateDescription = (description, maxWords) => {
@@ -12,8 +13,10 @@ const truncateDescription = (description, maxWords) => {
 };
 
 const FoodItem = ({ id, name, price, description, image }) => {
+    const [averageRating, setAverageRating] = useState(0);
     const { cartItems = {}, addToCart, handleDecrement, handleIncrement } = useContext(StoreContext);
     const navigate = useNavigate();
+    const { url } = useContext(StoreContext); // Ensure you get the URL context here
 
     const handleClick = () => {
         navigate(`/item/${id}`, {
@@ -27,7 +30,46 @@ const FoodItem = ({ id, name, price, description, image }) => {
         });
     }
 
-    const itemQuantity = cartItems[id] || 0; // Safely access cartItems[id]
+    const itemQuantity = cartItems[id] || 0;
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get(`${url}/api/food/reviews/${id}`);
+                const reviews = response.data.reviews;
+
+                // Calculate the average rating
+                if (reviews.length > 0) {
+                    const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+                    const average = (totalRating / reviews.length).toFixed(1);
+                    setAverageRating(average);
+                } else {
+                    setAverageRating(0);
+                }
+            } catch (error) {
+                console.error("Error fetching reviews", error);
+            }
+        };
+
+        if (id) {
+            fetchReviews();
+        }
+    }, [id, url]);
+
+    const renderStars = (rating) => {
+        return (
+            <div className='star-rating'>
+                {[1, 2, 3, 4, 5].map(star => (
+                    <span
+                        key={star}
+                        className={`star ${star <= rating ? 'filled' : ''}`}
+                    >
+                        ★
+                    </span>
+                ))}
+            </div>
+        );
+    };
 
     return (
         <div className='food-item'>
@@ -46,13 +88,13 @@ const FoodItem = ({ id, name, price, description, image }) => {
             <div onClick={handleClick} className='food-item-info'>
                 <div className='food-item-name-rating'>
                     <p>{name}</p>
-                    <img src={assets.rating_starts} alt="Rating stars" />
+                    {renderStars(averageRating)}
                 </div>
                 <p className='food-item-desc'>{truncateDescription(description, 12)}</p>
                 <p className='food-item-price'>₹{price}</p>
             </div>
         </div>
-    )
+    );
 }
 
 export default FoodItem;

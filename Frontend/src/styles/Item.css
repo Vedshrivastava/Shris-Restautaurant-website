@@ -79,26 +79,42 @@
     padding: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .review-item p {
-    margin: 5px 0;
-  }
-  
-  .review-item button {
-    background-color: var(--base-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; 
+    position: relative; 
+}
+
+.review-content {
+    flex: 1;
+}
+
+.review-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    height: calc(100% - 20px); 
+}
+
+.review-actions button {
+    background: none; 
     border: none;
-    color: #fff;
-    padding: 5px 10px;
-    margin-right: 5px;
-    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .review-item button:hover {
-    background-color: darkred;
-  }
+    padding: 5px;
+}
+
+.review-actions .edit-button,
+.review-actions .delete-button {
+    font-size: 18px;
+    margin-bottom: 10px; /* Space between icons */
+}
+
+.review-actions button:hover {
+    color: tomato
+}
   
   .review-form {
     background-color: #fff;

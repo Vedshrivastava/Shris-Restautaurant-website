@@ -12,9 +12,9 @@
     display: flex;
     flex-direction: column;
     align-items: start;
-    gap: 10vw;
     max-width: 50%;
     bottom: 10%;
+    gap: 1.8vw;
     left: 6vw;
     animation: fadeIn 2s;
     padding: 0 2vw; /* Add padding to ensure content fits inside */
@@ -81,5 +81,9 @@
     }
     .header-contents button {
         font-size: 3.8vw
+    }
+
+    .header-contents {
+        gap: 10vw;
     }
 }
