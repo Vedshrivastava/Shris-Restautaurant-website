@@ -7,7 +7,6 @@ import FoodDisplay from '../components/FoodDisplay'
 const Home = () => {
 
   const [category, setCategory] = useState("All")
-  window.scrollTo(0, 0);
 
   return (
     <div>
