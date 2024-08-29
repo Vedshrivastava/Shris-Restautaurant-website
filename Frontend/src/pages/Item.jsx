@@ -120,7 +120,6 @@ const Item = () => {
             </div>
             <div className='reviews-section'>
                 {/* Add Review Form */}
-                <button onClick={() => setShowForm(true)}>Add Review</button>
                 {!editReview && (
                     <form onSubmit={handleAddReview} className='review-form'>
                         <h2>Add a Review</h2>
