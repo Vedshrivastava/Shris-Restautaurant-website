@@ -15,7 +15,7 @@ const Header = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Check screen size on component mount
+    handleResize(); 
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -38,7 +38,7 @@ const Header = () => {
 
   const handleScrollAndNavigate = (section, targetId) => {
     setMenu(section);
-    navigate('/#' + targetId); // Update the URL hash
+    navigate('/#' + targetId); 
   };
 
   useEffect(() => {

@@ -5,7 +5,6 @@ import { StoreContext } from '../context/StoreContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Helper function to truncate description
 const truncateDescription = (description, maxWords) => {
     const words = description.split(' ');
     if (words.length <= maxWords) return description;
@@ -16,7 +15,7 @@ const FoodItem = ({ id, name, price, description, image }) => {
     const [averageRating, setAverageRating] = useState(0);
     const { cartItems = {}, addToCart, handleDecrement, handleIncrement } = useContext(StoreContext);
     const navigate = useNavigate();
-    const { url } = useContext(StoreContext); // Ensure you get the URL context here
+    const { url } = useContext(StoreContext); 
 
     const handleClick = () => {
         navigate(`/item/${id}`, {
@@ -38,7 +37,6 @@ const FoodItem = ({ id, name, price, description, image }) => {
                 const response = await axios.get(`${url}/api/food/reviews/${id}`);
                 const reviews = response.data.reviews;
 
-                // Calculate the average rating
                 if (reviews.length > 0) {
                     const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
                     const average = (totalRating / reviews.length).toFixed(1);

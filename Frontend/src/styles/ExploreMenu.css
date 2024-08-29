@@ -18,7 +18,7 @@
 .explore-menu-list {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Align items to the start to keep images aligned */
+    align-items: flex-start; 
     gap: 30px;
     text-align: center;
     margin: 20px 0;
@@ -31,8 +31,8 @@
 
 .explore-menu-list-items {
     display: flex;
-    flex-direction: column; /* Stack image and text vertically */
-    align-items: center; /* Center align items horizontally */
+    flex-direction: column; 
+    align-items: center; 
 }
 
 .explore-menu-list-items img {
@@ -48,7 +48,7 @@
     color: #747474;
     font-size: max(1.4vw, 16px);
     cursor: pointer;
-    text-align: center; /* Center text under the image */
+    text-align: center; 
 }
 
 .explore-menu hr {

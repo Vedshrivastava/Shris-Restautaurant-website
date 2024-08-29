@@ -38,12 +38,12 @@
 }
 
 .food-item-name-rating .star {
-    font-size: 20px; /* Adjust star size as needed */
-    color: #e0e0e0; /* Light gray for empty stars */
+    font-size: 20px; 
+    color: #e0e0e0; 
 }
 
 .food-item-name-rating .star.filled {
-    color: #FFD700; /* Gold color for filled stars */
+    color: #FFD700; 
 }
 
 .food-item-desc {

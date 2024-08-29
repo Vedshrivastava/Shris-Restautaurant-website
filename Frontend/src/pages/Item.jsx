@@ -17,6 +17,7 @@ const Item = () => {
     const [editReview, setEditReview] = useState(null);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchReviews = async () => {
             try {
                 const response = await axios.get(`${url}/api/food/reviews/${id}`);
@@ -72,7 +73,7 @@ const Item = () => {
     const handleDeleteReview = async (reviewId) => {
         try {
             await axios.delete(`${url}/api/review/delete/${reviewId}`, {
-                headers: { Authorization: `Bearer ${token}` }  // Correct way to pass token
+                headers: { Authorization: `Bearer ${token}` }  
             });
             setReviews(reviews.filter(review => review._id !== reviewId));
         } catch (error) {

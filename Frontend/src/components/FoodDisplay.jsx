@@ -26,7 +26,7 @@ const FoodDisplay = ({ category }) => {
               />
             );
           }
-          return null; // Ensure you return something if condition is not met
+          return null; 
         })}
       </div>
     </div>

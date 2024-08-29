@@ -7,12 +7,12 @@ import FoodDisplay from '../components/FoodDisplay'
 const Home = () => {
 
   const [category, setCategory] = useState("All")
+  window.scrollTo(0, 0);
 
   return (
     <div>
       <Header/>
       <ExploreMenu category={category} setCategory={setCategory} />
-      {/* when the user selects a category in ExploreMenu, it updates the category in the parent component, and FoodDisplay reflects these changes.*/}
       <FoodDisplay category={category} />
     </div>
   )

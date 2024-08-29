@@ -39,7 +39,7 @@ const Cart = () => {
           <hr />
           {
             food_list.map((item) => {
-              const quantity = cartItems[item._id] || 0; // Default to 0 if item is not in cart
+              const quantity = cartItems[item._id] || 0; 
               if (quantity > 0) {
                 return (
                   <div key={item._id} className="cart-items-title cart-items-item">
@@ -65,7 +65,7 @@ const Cart = () => {
                   </div>
                 );
               }
-              return null; // Ensure you return something if condition is not met
+              return null; 
             })
           }
         </div>

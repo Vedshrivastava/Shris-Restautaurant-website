@@ -26,7 +26,6 @@ const Navbar = ({ setShowLogin }) => {
         toast.success('Logged out successfully'); 
     };
 
-    // Function to scroll to the target element
     const scrollToElement = (targetId) => {
         const element = document.getElementById(targetId);
         if (element) {
@@ -43,10 +42,9 @@ const Navbar = ({ setShowLogin }) => {
         setMenu(section);
         navigate('/');  
 
-        // Use setTimeout to ensure page load
         setTimeout(() => {
             scrollToElement(targetId);
-        }, 100); // Adjust delay if needed
+        }, 100); 
     };
 
     return (

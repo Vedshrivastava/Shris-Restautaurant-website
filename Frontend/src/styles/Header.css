@@ -1,9 +1,9 @@
 .header {
     height: 34vw;
     margin: 30px auto;
-    background-size: cover; /* Changed from contain to cover */
+    background-size: cover; 
     background-repeat: no-repeat;
-    background-position: center; /* Center the background image */
+    background-position: center; 
     position: relative;
 }
 
@@ -17,7 +17,7 @@
     gap: 1.8vw;
     left: 6vw;
     animation: fadeIn 2s;
-    padding: 0 2vw; /* Add padding to ensure content fits inside */
+    padding: 0 2vw; 
 }
 
 .header-contents h2 {
@@ -39,11 +39,11 @@
     background-color: white;
     font-size: max(1vw, 13px);
     border-radius: 50px;
-    transition: opacity 0.3s ease; /* Smooth transition for opacity */
+    transition: opacity 0.3s ease; 
 }
 
 .header-contents button:hover {
-    opacity: 0.8; /* Change opacity on hover */
+    opacity: 0.8; 
     background-color: white;
 }
 

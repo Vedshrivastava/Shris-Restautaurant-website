@@ -32,7 +32,6 @@ const PlaceOrder = () => {
   const placeOrder = async (event) => {
     event.preventDefault();
 
-    // Initialize Stripe with your public key
     const stripe = await loadStripe(
       import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
     );
@@ -43,7 +42,6 @@ const PlaceOrder = () => {
     //   return;
     // }
 
-    // Create the order items list
     const orderItems = food_list
       .filter((item) => cartItems[item._id] > 0)
       .map((item) => ({
@@ -52,7 +50,6 @@ const PlaceOrder = () => {
       }));
     console.log(orderItems);
 
-    // Prepare the order data
     let orderData = {
       userId: localStorage.getItem("userId"),
       address: data,
@@ -70,7 +67,6 @@ const PlaceOrder = () => {
       },
     };
     try {
-      // Send order data to your backend
       let response = await axios.post(url + "/api/order/place", orderData, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -85,17 +81,14 @@ const PlaceOrder = () => {
         });
 
         if (result.error) {
-          // Handle any errors that occurred during redirection
           console.error(result.error.message);
           alert("An error occurred during payment processing.");
         }
       } else {
-        // Handle the case where the order placement fails on the backend
         alert("Error placing order.");
         console.log(response.data.message);
       }
     } catch (error) {
-      // Handle any errors that occur during the order placement or payment initiation
       console.error("Error placing order:", error);
       alert("An error occurred. Please try again.");
     }
