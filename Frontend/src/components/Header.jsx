@@ -7,6 +7,20 @@ const Header = () => {
   const [menu, setMenu] = useState("home");
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 435);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Check screen size on component mount
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const scrollToElement = (targetId) => {
     const element = document.getElementById(targetId);
@@ -36,7 +50,7 @@ const Header = () => {
 
   return (
     <div className='header'>
-      <img src={assets.header_img} alt="" />
+      <img src={isSmallScreen ? assets.header_img_small : assets.header_img} alt="" />
       <div className="header-contents">
         <h2>Order your favourite food here</h2>
         <p>
