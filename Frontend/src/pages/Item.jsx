@@ -11,7 +11,6 @@ const Item = () => {
     const { token, url, userId, userName } = useContext(StoreContext);
     const location = useLocation();
     const { id, name, price, description, image } = location.state || {};
-
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState({ comment: '', rating: 1 });
     const [editReview, setEditReview] = useState(null);
@@ -121,6 +120,7 @@ const Item = () => {
             </div>
             <div className='reviews-section'>
                 {/* Add Review Form */}
+                <button onClick={() => setShowForm(true)}>Add Review</button>
                 {!editReview && (
                     <form onSubmit={handleAddReview} className='review-form'>
                         <h2>Add a Review</h2>
