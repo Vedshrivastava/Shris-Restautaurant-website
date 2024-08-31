@@ -10,7 +10,7 @@ const MyOrders = () => {
     const {url, token} = useContext(StoreContext);
 
     const fetchOrders = async () => {
-        const response = await axios.post(url + "/api/order/user-orders",{},{headers:{token}})
+        const response = await axios.post(url + "/api/order/user-orders",{},{headers: { Authorization: `Bearer ${token}` }})
         setData(response.data.data);
     } 
 

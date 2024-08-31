@@ -73,11 +73,20 @@ const verifyOrders = async (req, res) => {
 
 const userOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({userId:req.body.userId});
-        res.json({success:true, data:orders})
+        // Log the user ID to verify it's being passed correctly
+        console.log("This is userID in order Controller", req.userId);
+
+        // Fetch orders based on the user ID
+        const orders = await orderModel.find({ userId: req.userId });
+
+        // Send the orders in the response
+        res.json({ success: true, data: orders });
     } catch (error) {
-        console.log(error)
-        res.json({success:false, message:"Error"})
+        // Log any errors
+        console.log(error);
+
+        // Send an error response
+        res.json({ success: false, message: "Error" });
     }
 }
 
