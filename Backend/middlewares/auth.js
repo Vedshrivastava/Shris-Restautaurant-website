@@ -11,19 +11,17 @@ const authMiddleware = async (req, res, next) => {
     }
 
     try {
-        // Verify and decode the token
         const decoded = jwt.verify(token, process.env.JWT_KEY_CONSUMER);
 
-        console.log("Decoded token payload:", decoded);  // Log the decoded payload
+        console.log("Decoded token payload:", decoded);  
 
-        // Attach user information to the request object
-        req.userId = decoded.id;  // Extract user ID from token payload
-        req.userName = decoded.name;  // Optional: Attach name if needed
-        req.userEmail = decoded.email;  // Optional: Attach email if needed
+        req.userId = decoded.id;  
+        req.userName = decoded.name;  
+        req.userEmail = decoded.email;  
 
-        console.log("User ID from token:", req.userId);  // Log the user ID attached to the request
+        console.log("User ID from token:", req.userId);  
 
-        next();  // Proceed to the next middleware or route handler
+        next();  
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({ success: false, message: "Token has expired. Please log in again." });

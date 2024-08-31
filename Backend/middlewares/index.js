@@ -2,7 +2,7 @@ import JWT from "jsonwebtoken";
 
 const signTokenForConsumer = async (user) => {
   if (!user || !user.id) {
-    console.error('Invalid user object:', user);  // Debugging: Check if user or user.id is undefined
+    console.error('Invalid user object:', user);
     return null;
   }
 

@@ -8,92 +8,79 @@ const addReview = async (req, res) => {
     try {
         const { username, userid, foodId, comment, rating } = req.body;
 
-        console.log("Received userId:", userid);  // Debugging: Log userId
-        console.log("Received foodId:", foodId);  // Debugging: Log foodId
-        console.log("Received username:", username);  // Debugging: Log username
+        console.log("Received userId:", userid);  
+        console.log("Received foodId:", foodId);  
+        console.log("Received username:", username);  
 
-        // Convert IDs to ObjectId
         const userObjectId = new mongoose.Types.ObjectId(userid);
         const foodObjectId = new mongoose.Types.ObjectId(foodId);
 
-        // Fetch the user and food item from the database
         const user = await userModel.findById(userObjectId);
         const foodItem = await foodModel.findById(foodObjectId);
 
-        console.log("User:", user);  // Debugging: Log the user document
-        console.log("Food item:", foodItem);  // Debugging: Log the food item document
+        console.log("User:", user);  
+        console.log("Food item:", foodItem);  
 
         if (!user) {
-            console.error("User not found:", userid);  // Log detailed error
+            console.error("User not found:", userid);  
             return res.status(404).json({ message: "User not found" });
         }
 
         if (!foodItem) {
-            console.error("Food item not found:", foodId);  // Log detailed error
+            console.error("Food item not found:", foodId);  
             return res.status(404).json({ message: "Food item not found" });
         }
 
-        // Create and save the review
         const review = new reviewModel({
             comment,
             rating,
-            author: userObjectId,  // Storing the ObjectId reference
-            by: username  // Directly using the username string
+            author: userObjectId,  
+            by: username  
         });
 
-        console.log("Saving review:", review);  // Debugging: Log the review to be saved
+        console.log("Saving review:", review);  
         await review.save();
 
-        // Add the review to the food item
         foodItem.reviews.push(review._id);
-        console.log("Saving food item with new review:", foodItem);  // Debugging: Log the food item before saving
+        console.log("Saving food item with new review:", foodItem);  
         await foodItem.save();
 
         res.status(201).json({ message: "Review added successfully", review });
     } catch (error) {
-        console.error("Error in addReview:", error);  // Log detailed error
+        console.error("Error in addReview:", error);  
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
 
-
-// Edit a Review
 const editReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
         const { comment, rating } = req.body;
 
-        // Find the review by ID
         const review = await reviewModel.findById(reviewId);
         
-        // Check if the review exists
         if (!review) {
             return res.status(404).json({ message: "Review not found" });
         }
 
-        // Check if the current user is authorized to edit this review
         if (review.author.toString() !== req.userId.toString()) {
             return res.status(403).json({ message: "You are not authorized to edit this review" });
         }
 
-        // Update the review fields
         if (comment) review.comment = comment;
         if (rating) review.rating = rating;
 
-        // Save the updated review
         await review.save();
 
-        // Respond with the updated review
         res.status(200).json({ message: "Review updated successfully", review });
     } catch (error) {
-        console.error('Error updating review:', error);  // Improved logging
+        console.error('Error updating review:', error);  
         res.status(500).json({ message: "Server error" });
     }
 };
 
 
-// Delete a Review
 const deleteReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
@@ -104,7 +91,6 @@ const deleteReview = async (req, res) => {
             return res.status(404).json({ message: "Review not found" });
         }
 
-        // Access userId directly from req
         if (review.author.toString() !== req.userId.toString()) {
             return res.status(403).json({ message: "You are not authorized to delete this review" });
         }
@@ -125,7 +111,6 @@ const deleteReview = async (req, res) => {
 };
 
 
-// Get Reviews for a Food Item
 const getReviews = async (req, res) => {
     try {
         const { foodId } = req.params;

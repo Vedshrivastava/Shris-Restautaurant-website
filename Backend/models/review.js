@@ -16,12 +16,12 @@ const reviewSchema = new mongoose.Schema({
         default: Date.now
     },
     author: {
-        type: mongoose.Schema.Types.ObjectId,  // Storing the reference to the user as ObjectId
-        ref: "User",  // Reference to the User model
+        type: mongoose.Schema.Types.ObjectId,  
+        ref: "User",  
         required: true
     },
     by: {
-        type: String,  // Storing the username as a string
+        type: String,  
         required: true
     }
 });

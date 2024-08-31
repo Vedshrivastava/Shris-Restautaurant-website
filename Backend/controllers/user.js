@@ -33,8 +33,8 @@ const loginUser = async (req, res) => {
           success: true,
           token,
           userId: user._id,
-          name: user.name, // Optionally include the user's name
-          email: user.email, // Optionally include the user's email
+          name: user.name, 
+          email: user.email, 
           cartItems: user.cartItems,
           message: "Logged in successfully",
         });
@@ -84,7 +84,7 @@ const registerUser = async (req, res) => {
 
     return res.json({
       success: true,
-      userId: user._id, // Include userId in the response
+      userId: user._id, 
       message: "Account Created",
     });
   } catch (error) {
