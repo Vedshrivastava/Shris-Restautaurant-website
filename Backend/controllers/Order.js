@@ -8,7 +8,7 @@ const frontend_url = "http://localhost:5173"
 const placeOrder = async (req, res) => {
     try {
         const newOrder = new orderModel({
-            // userId:req.body.userId,
+            userId:req.body.userId,
             items:req.body.items,
             amount:req.body.amount,
             address:req.body.address
@@ -39,11 +39,18 @@ const placeOrder = async (req, res) => {
         })
 
         const session = await stripe.checkout.sessions.create({
-            line_items:line_items,
-            mode:"payment",
-            success_url:"http://localhost:5173/sucess",
-            cancel_url:`${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
-        })
+            line_items: line_items,
+            mode: "payment",
+            success_url: "http://localhost:5173/success",
+            cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
+            // Include customer email to pre-fill the email field
+            customer_email: req.userEmail,
+            // Collect address details
+            shipping_address_collection: {
+                allowed_countries: ['IN'], // Specify allowed countries
+            },
+        });
+
         res.json({success:true, session_url:session.id})
 
     } catch (error) {

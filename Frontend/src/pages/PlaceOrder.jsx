@@ -56,7 +56,7 @@ const PlaceOrder = () => {
       items: orderItems,
       amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0,
       customer: {
-        name:"Eklavya Singh Parihar",
+        name: `${data.firstName} ${data.lastName}`,
         address: {
           line1: data.street,
           city: data.city,
