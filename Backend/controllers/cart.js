@@ -2,7 +2,7 @@ import userModel from '../models/user.js';
 
 const addToCart = async (req, res) => {
     try {
-        const userId = req.userId;  // Use the user ID from the middleware
+        const userId = req.userId;  
         const { itemId } = req.body;
 
         const userData = await userModel.findById(userId);
@@ -28,7 +28,7 @@ const addToCart = async (req, res) => {
 
 const updateCartQuantity = async (req, res) => {
     try {
-        const userId = req.userId;  // Use the user ID from the middleware
+        const userId = req.userId;  
         const { itemId, quantity } = req.body;
 
         const userData = await userModel.findById(userId);
@@ -54,7 +54,7 @@ const updateCartQuantity = async (req, res) => {
 
 const removeFromCart = async (req, res) => {
     try {
-        const userId = req.userId;  // Use the user ID from the middleware
+        const userId = req.userId;  
         const { itemId } = req.body;
 
         const userData = await userModel.findById(userId);
@@ -75,7 +75,7 @@ const removeFromCart = async (req, res) => {
 
 const getCart = async (req, res) => {
     try {
-        const userId = req.userId;  // Use the user ID from the middleware
+        const userId = req.userId;  
 
         const userData = await userModel.findById(userId);
         if (!userData) {

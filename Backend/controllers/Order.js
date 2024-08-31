@@ -41,13 +41,11 @@ const placeOrder = async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             line_items: line_items,
             mode: "payment",
-            success_url: "http://localhost:5173/success",
+            success_url: "http://localhost:5173/my-orders",
             cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
-            // Include customer email to pre-fill the email field
             customer_email: req.userEmail,
-            // Collect address details
             shipping_address_collection: {
-                allowed_countries: ['IN'], // Specify allowed countries
+                allowed_countries: ['IN'], 
             },
         });
 
@@ -64,7 +62,7 @@ const placeOrder = async (req, res) => {
 const verifyOrders = async (req, res) => {
     const {orderId, success} = req.body;
     try {
-        if(success=="true") {
+        if(success) {
             await orderModel.findByIdAndUpdate(orderId,{payment:true});
             res.json({success:true, message:"Payment Done"})
         }
@@ -80,19 +78,12 @@ const verifyOrders = async (req, res) => {
 
 const userOrders = async (req, res) => {
     try {
-        // Log the user ID to verify it's being passed correctly
         console.log("This is userID in order Controller", req.userId);
 
-        // Fetch orders based on the user ID
-        const orders = await orderModel.find({ userId: req.userId });
-
-        // Send the orders in the response
+        const orders = await orderModel.find({ userId: req.userId }).sort({ date: -1 });
         res.json({ success: true, data: orders });
     } catch (error) {
-        // Log any errors
         console.log(error);
-
-        // Send an error response
         res.json({ success: false, message: "Error" });
     }
 }
@@ -101,11 +92,11 @@ const userOrders = async (req, res) => {
 
 const listOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({});
-        res.json({success:true, data:orders});
+        const orders = await orderModel.find({}).sort({ date: -1 });
+        res.json({ success: true, data: orders });
     } catch (error) {
         console.log(error);
-        res.json({success:false, message:"Error"});
+        res.json({ success: false, message: "Error" });
     }
 }
 
