@@ -8,91 +8,115 @@ const frontend_url = "http://localhost:5173"
 const placeOrder = async (req, res) => {
     try {
         const newOrder = new orderModel({
-            userId:req.body.userId,
-            items:req.body.items,
-            amount:req.body.amount,
-            address:req.body.address
-        })
-        await newOrder.save();
-        await userModel.findByIdAndUpdate(req.body.userId,{cartData:{}});
+            userId: req.body.userId,
+            items: req.body.items,
+            amount: req.body.amount,
+            address: req.body.address,
+            payment: false
+        });
+        const savedOrder = await newOrder.save();
 
         const line_items = req.body.items.map((item) => ({
-            price_data:{
-                currency:"inr",
-                product_data:{
-                    name:item.name
+            price_data: {
+                currency: "inr",
+                product_data: {
+                    name: item.name
                 },
-                unit_amount:item.price*100
+                unit_amount: item.price * 100
             },
-            quantity:item.quantity
-        }))
+            quantity: item.quantity
+        }));
 
         line_items.push({
-            price_data:{
-                currency:"inr",
-                product_data:{
-                    name:'Delivery Charges'
+            price_data: {
+                currency: "inr",
+                product_data: {
+                    name: 'Delivery Charges'
                 },
-                unit_amount:20*100
+                unit_amount: 20 * 100
             },
-            quantity:1
-        })
+            quantity: 1
+        });
 
         const session = await stripe.checkout.sessions.create({
             line_items: line_items,
             mode: "payment",
-            success_url: "http://localhost:5173/my-orders",
-            cancel_url: `${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
+            success_url: `${frontend_url}/verify?success=true&orderId=${savedOrder._id}`,
+            cancel_url: `${frontend_url}/verify?success=false&orderId=${savedOrder._id}`,
             customer_email: req.userEmail,
+            metadata: {
+                orderId: savedOrder._id.toString()
+            },
             shipping_address_collection: {
-                allowed_countries: ['IN'], 
+                allowed_countries: ['IN'],
             },
         });
 
-        res.json({success:true, session_url:session.id})
+        // Return sessionId instead of session_url
+        res.json({ success: true, sessionId: session.id });
 
     } catch (error) {
-        console.log(error)
-        res.json({success:false, message: "Error"})
+        console.log(error);
+        res.json({ success: false, message: "Error creating checkout session" });
     }
-}
+};
+
+
+
 
 // USE WEBHOOKS FOR PAYMENT VERIFICATION
 
-const verifyOrders = async (req, res) => {
-    const {orderId, success} = req.body;
+const stripeWebhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+
+    let event;
     try {
-        if(success) {
-            await orderModel.findByIdAndUpdate(orderId,{payment:true});
-            res.json({success:true, message:"Payment Done"})
-        }
-        else {
-            await orderModel.findByIdAndDelete(orderId);
-            res.json({success:false, message:"Payment not done"})
-        }
-    } catch (error) {
-        console.log(error);
-        res.json({success:false, message:"Error"})
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.log(`⚠️  Webhook signature verification failed: ${err.message}`);
+        return res.sendStatus(400);
     }
-}
+
+    // Handle the event
+    switch (event.type) {
+        case 'checkout.session.completed':
+            const session = event.data.object;
+            const orderId = session.metadata.orderId;
+
+            // Update the order status to paid
+            await orderModel.findByIdAndUpdate(orderId, { payment: true });
+            break;
+
+        default:
+            console.log(`Unhandled event type ${event.type}`);
+    }
+
+    res.status(200).send('Received');
+};
 
 const userOrders = async (req, res) => {
     try {
         console.log("This is userID in order Controller", req.userId);
 
-        const orders = await orderModel.find({ userId: req.userId }).sort({ date: -1 });
+        // Fetch only paid orders for the specific user
+        const orders = await orderModel.find({ 
+            userId: req.userId, 
+            payment: true  // Ensure that only orders with payment confirmed are retrieved
+        }).sort({ date: -1 });
+
         res.json({ success: true, data: orders });
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: "Error" });
+        res.json({ success: false, message: "Error retrieving orders" });
     }
-}
+};
+
 
 
 
 const listOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({}).sort({ date: -1 });
+        const orders = await orderModel.find({payment: true}).sort({ date: -1 });
         res.json({ success: true, data: orders });
     } catch (error) {
         console.log(error);
@@ -110,4 +134,4 @@ const updateStatus = async (req, res) => {
     }
 }
 
-export {placeOrder, verifyOrders,userOrders,listOrders, updateStatus}
+export {placeOrder, stripeWebhook,userOrders,listOrders, updateStatus}

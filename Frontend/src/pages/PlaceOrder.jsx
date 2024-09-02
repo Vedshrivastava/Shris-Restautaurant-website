@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token,user, food_list, cartItems, url } =
+  const { getTotalCartAmount, token, user, food_list, cartItems, url } =
     useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -32,15 +32,7 @@ const PlaceOrder = () => {
   const placeOrder = async (event) => {
     event.preventDefault();
 
-    const stripe = await loadStripe(
-      import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
-    );
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    // if (!user) {
-    //   alert("User is not logged in");
-    //   return;
-    // }
+    const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
     const orderItems = food_list
       .filter((item) => cartItems[item._id] > 0)
@@ -66,19 +58,18 @@ const PlaceOrder = () => {
         },
       },
     };
+
     try {
       let response = await axios.post(url + "/api/order/place", orderData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.success) {
         // Retrieve the Stripe session ID from the backend response
-        const { session_url } = response.data;
+        const { sessionId } = response.data;
 
         // Redirect to the Stripe checkout page
-        const result = await stripe.redirectToCheckout({
-          sessionId: session_url,
-        });
+        const result = await stripe.redirectToCheckout({ sessionId });
 
         if (result.error) {
           console.error(result.error.message);
@@ -93,6 +84,7 @@ const PlaceOrder = () => {
       alert("An error occurred. Please try again.");
     }
   };
+
   useEffect(() => {
     if (!token) {
       navigate("/cart");

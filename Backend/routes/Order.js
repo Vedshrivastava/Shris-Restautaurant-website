@@ -1,12 +1,12 @@
 import express from 'express'
 import authMiddleware from '../middlewares/auth.js';
-import { placeOrder, verifyOrders, userOrders, listOrders, updateStatus } from '../controllers/Order.js';
+import { placeOrder, stripeWebhook, userOrders, listOrders, updateStatus } from '../controllers/Order.js';
 
 const order = express.Router()
 
 order.post('/place', authMiddleware, placeOrder);
 
-order.post('/verify', verifyOrders)
+order.post('/verify', stripeWebhook)
 
 order.post('/user-orders', authMiddleware, userOrders)
 

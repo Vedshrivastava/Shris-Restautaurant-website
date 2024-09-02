@@ -7,7 +7,7 @@ import user from "./routes/user.js";
 import admin from "./routes/admin.js"
 import cart from "./routes/cart.js";
 import category from "./routes/category.js";
-import order from "./routes/Order.js";
+import order from "./routes/order.js";
 import review from "./routes/review.js";
 import dotenv from 'dotenv'
 
