@@ -7,7 +7,7 @@ const Footer = () => {
     <div className='footer' id='footer'>
         <div className="footer-content">
             <div className="footer-content-left">
-                <img src={assets.logo} alt="" />
+                <img alt="" />
                 <p>Thank you for visiting Shri’s Restaurant! We take pride in serving delicious and authentic cuisine with a touch of warmth and hospitality. For inquiries or reservations, feel free to contact us. Stay connected through our social media channels for the latest updates and special offers. We look forward to welcoming you again!</p>
                 <div className="footer-social-icons">
                     <img src={assets.facebook_icon} alt="" />
