@@ -171,3 +171,9 @@
         font-size: 14px;
     }
 }
+
+@media (max-width: 480px) {
+    .navbar{
+        background: #f4f4f4;
+    }
+}

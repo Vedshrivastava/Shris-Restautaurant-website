@@ -133,4 +133,8 @@
         display: grid;
         grid-template-columns: 1fr 1.5fr 1fr;
     }
+    .cart{
+        width: 85% !important;
+        margin: 20px auto;
+    }
 }

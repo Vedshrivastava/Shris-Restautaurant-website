@@ -26,3 +26,12 @@ a{
     opacity: 1;
   }
 }
+
+@media (max-width: 480px) {
+
+  .app{
+    width: 100%;
+  }
+  
+  
+}

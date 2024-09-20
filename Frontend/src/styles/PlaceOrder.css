@@ -196,6 +196,8 @@ h2 {
 @media (max-width: 480px) {
   .place-order {
     padding: 10px; /* Reduce padding for smaller screens */
+    width: 85%;
+    margin: 0 auto;
   }
 
   .place-order-right {

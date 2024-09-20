@@ -72,3 +72,10 @@
         font-size: 7vw;
     }
 }
+
+@media (max-width: 480px) {
+    .explore-menu {
+        width: 85%;
+        margin: 0px auto;
+    }
+}

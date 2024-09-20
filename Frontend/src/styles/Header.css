@@ -54,15 +54,15 @@
     }
 }
 
-@media (max-width: 435px) {
+@media (max-width: 480px) {
 
     .header {
         height: auto; 
         position: relative;
+        margin-top: 0px !important;
     }
 
     .header img {
-        border-radius: 10px;
         width: 100%; 
         height: auto; 
         object-fit: cover; 
