@@ -21,4 +21,8 @@
         width: 85%;
         margin: 0 auto; /* Centers the element horizontally */
     }
+
+    .food-display-list{
+        gap: 15px;
+    }
 }

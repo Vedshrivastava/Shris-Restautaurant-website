@@ -52,3 +52,11 @@
         font-size: 10px;
     }
 }
+
+@media (max-width: 480px) {
+    .my-orders{
+        margin-top: 70px !important;
+        width: 85%;
+        margin: auto;
+    }
+}

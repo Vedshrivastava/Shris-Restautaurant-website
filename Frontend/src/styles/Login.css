@@ -72,3 +72,12 @@
     font-weight: 500;
     cursor: pointer;
 }
+
+@media (max-width: 480px) {
+
+    .login-container{
+        width: 85%;
+        margin: auto;
+    }
+    
+}

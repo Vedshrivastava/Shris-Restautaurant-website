@@ -23,7 +23,6 @@ const Navbar = ({ setShowLogin }) => {
         localStorage.removeItem("userName")
         localStorage.removeItem("token"); 
         localStorage.removeItem("userId"); 
-        toast.success('Logged out successfully'); 
     };
 
     const scrollToElement = (targetId) => {

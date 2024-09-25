@@ -10,6 +10,7 @@ import category from "./routes/category.js";
 import order from "./routes/order.js";
 import review from "./routes/review.js";
 import dotenv from 'dotenv'
+import cookieParser from "cookie-parser";
 
 dotenv.config()
 
@@ -17,6 +18,7 @@ const app = express()
 const port = 4000
 
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors())
 
 connectDB(process.env.MONGO_URI)

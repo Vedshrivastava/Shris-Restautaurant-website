@@ -138,3 +138,11 @@
         margin: 20px auto;
     }
 }
+
+@media (max-width: 480px) {
+
+    .cart{
+        margin-top: 60px !important;
+    }
+    
+}

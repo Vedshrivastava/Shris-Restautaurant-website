@@ -1,7 +1,7 @@
 .food-item {
     width: 100%;
     margin: auto;
-    height: 57vh; 
+    height: 400px; 
     border-radius: 15px;
     box-shadow: 0px 0px 0px #00000015;
     transition: 0.3s;
@@ -85,4 +85,61 @@
 
 .food-item-counter img {
     width: 30px;
+}
+
+@media (max-width: 480px) {
+    .food-item {
+        flex-direction: row; /* Side by side layout */
+        height: 180px; /* Adjust height to auto for a better fit */
+        gap: 10px;
+        border-radius: 15px;
+        margin: 0px auto !important;
+        background-color: #f4f4f4;
+    }
+
+    .food-item-img-container{
+        padding: 10px;
+        border-radius: 25px;
+        top: 12px;
+    }
+
+    .food-item-image {
+        width: 100%; /* Image takes 50% width */
+        height: 70%; /* Ensure the image fills its container */
+        border-radius: 15px; /* Round only the left side */
+        margin-top: 10px;
+    }
+
+    .food-item-info {
+        width: 50%; /* Info takes 50% width */
+        padding: 0px; /* Slightly smaller padding */
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+        justify-content: center;
+    }
+
+    .food-item-name-rating{
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .food-item-name-rating p{
+        font-size: 16px;
+    }
+    .food-item-img-container .add {
+        bottom: 50px;
+        right: 47px;
+        width: 30px;
+    }
+
+    .food-item-counter{
+        bottom: 52px;
+        height: 27px;
+        right: 25px;
+    }
+
+    .food-item-counter img{
+        width: 20px;
+    }
 }
