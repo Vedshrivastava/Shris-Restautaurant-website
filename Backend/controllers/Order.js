@@ -38,26 +38,17 @@ const placeOrder = async (req, res) => {
             quantity: 1
         });
 
-        // Create a PaymentIntent to support UPI payment method
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: req.body.amount * 100, // Total amount in cents
-            currency: 'inr',
-            payment_method_types: ['upi'], // Allow UPI as a payment method
-        });
-
-        // Create the checkout session
         const session = await stripe.checkout.sessions.create({
             line_items: line_items,
             mode: "payment",
-            success_url: `${frontend_url}/verify?success=true&orderId=${savedOrder._id}`,
-            cancel_url: `${frontend_url}/verify?success=false&orderId=${savedOrder._id}`,
+            success_url: `${frontend_url}/verify?success=true&orderId=${savedOrder._id}`,  // Fixed string interpolation
+            cancel_url: `${frontend_url}/verify?success=false&orderId=${savedOrder._id}`,  // Fixed string interpolation
             customer_email: req.userEmail,
+            metadata: {
+                orderId: savedOrder._id.toString()
+            },
             shipping_address_collection: {
                 allowed_countries: ['IN'],
-            },
-            metadata: {
-                orderId: savedOrder._id.toString(),
-                paymentIntentId: paymentIntent.id // Attach the payment intent ID to the session
             },
         });
 
@@ -69,6 +60,7 @@ const placeOrder = async (req, res) => {
         res.json({ success: false, message: "Error creating checkout session" });
     }
 };
+
 
 
 

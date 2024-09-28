@@ -59,15 +59,17 @@
     .header {
         height: auto; 
         position: relative;
-        margin-top: 0px !important;
+        margin-top: 70px !important;
     }
 
     .header img {
         margin-top: 55px !important;
-        width: 100%; 
         height: auto; 
         object-fit: cover; 
         display: block;
+        width: 90%;
+        margin: auto;
+        border-radius: 8px;
     }
 
 
@@ -78,13 +80,14 @@
     .header-contents h2 {
         font-weight: 500;
         color: white;
-        font-size: 8vw;
+        font-size: 5vw;
     }
     .header-contents button {
         font-size: 3.8vw
     }
 
     .header-contents {
-        gap: 10vw;
+        gap: 12px;
+        top: 10px;
     }
 }

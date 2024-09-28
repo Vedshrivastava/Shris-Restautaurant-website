@@ -50,7 +50,7 @@ const Header = () => {
 
   return (
     <div className='header'>
-      <img src={isSmallScreen ? assets.header_img_small : assets.header_img} alt="" />
+      <img src={assets.header_img} alt="" />
       <div className="header-contents">
         <h2>Order your favourite food here</h2>
         <p>
