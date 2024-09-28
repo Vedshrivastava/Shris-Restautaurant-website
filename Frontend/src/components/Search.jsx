@@ -72,7 +72,6 @@ const Search = ({ setShowSearch }) => {
                     {filteredFood.length > 0 ? (
                         <div className='food-list'>
                             {filteredFood.map((item) => (
-                                <div key={item._id} onClick={() => handleFoodItemClick(item)}>
                                     <FoodItem 
                                         id={item._id}
                                         name={item.name}
@@ -80,7 +79,6 @@ const Search = ({ setShowSearch }) => {
                                         price={item.price}
                                         image={item.image}
                                     />
-                                </div>
                             ))}
                         </div>
                     ) : (

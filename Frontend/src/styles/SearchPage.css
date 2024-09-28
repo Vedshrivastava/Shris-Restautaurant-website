@@ -12,21 +12,23 @@
 
 .search-container {
     place-self: center; /* Center the container */
-    width: max(26vw, 360px); /* Responsive width */
+    width: max(23vw, 330px); /* Responsive width */
     color: #333; /* Text color */
     background-color: white; /* Background color of the container */
     display: flex; /* Flex layout */
     flex-direction: column; /* Stack items vertically */
     gap: 25px; /* Spacing between items */
-    padding: 25px 30px; /* Padding inside the container */
     border-radius: 8px; /* Rounded corners */
     font-size: 14px; /* Font size */
     animation: fadeIn 0.5s; /* Fade-in animation */
-    max-height: 90vh; /* Limit height to viewport height */
+    max-height: 80vh; /* Limit height to viewport height */
     overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .search-title {
+    margin-top: 10px !important;
+    width: 90%;
+    margin:auto; 
     display: flex; /* Flex layout */
     justify-content: space-between; /* Space between title and icon */
     align-items: center; /* Center vertically */
@@ -43,6 +45,8 @@
     border: 1px solid #c9c9c9; /* Border color */
     padding: 10px; /* Padding */
     border-radius: 4px; /* Rounded corners */
+    width: 90%;
+    margin: auto;
 }
 
 .food-display {
@@ -60,10 +64,64 @@
 .food-list {
     display: grid; /* Grid layout for food items */
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid */
-    gap: 40px; /* Spacing between grid items */
-    width: 80%;
+    gap: 20px; /* Spacing between grid items */
+    width: 90%;
     margin: auto;
 }
+
+.search .food-item {
+    flex-direction: row; /* Side by side layout */
+    height: 170px; /* Adjust height for a better fit */
+    gap: 5px;
+    background-color: #f4f4f4;
+}
+
+.search .food-item-img-container {
+    padding: 10px;
+    border-radius: 25px;
+}
+
+.search .food-item-image {
+    width: 100%; /* Image takes full width */
+    height: 70%; /* Ensure the image fills its container */
+    border-radius: 15px; /* Round edges */
+    margin-top: 10px;
+}
+
+.search .food-item-info {
+    width: 50%; /* Info takes 50% width */
+    padding: 0px; /* Smaller padding */
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    justify-content: center;
+}
+
+.search .food-item-name-rating {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.search .food-item-name-rating p {
+    font-size: 16px;
+}
+
+.search .food-item-img-container .add {
+    bottom: 50px;
+    right: 47px;
+    width: 30px;
+}
+
+.search .food-item-counter {
+    bottom: 52px;
+    height: 27px;
+    right: 25px;
+}
+
+.search .food-item-counter img {
+    width: 20px;
+}
+
 
 @media (max-width: 480px) {
 
@@ -90,5 +148,9 @@
     
     .food-list {
         width: 100%;
+    }
+
+    .food-display{
+        width: 95%;
     }
 }
