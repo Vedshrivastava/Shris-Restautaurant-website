@@ -74,7 +74,7 @@
     .search-container {
         width: 85%;
         padding: 0px !important;
-        height: auto;
+        max-height: 80vh;
     }
 
     .search-input{
