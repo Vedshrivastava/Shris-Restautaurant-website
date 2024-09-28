@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { Lock } from "lucide-react";
 import toast from "react-hot-toast";
-import '../styles/resetPassword.css'
+import '../styles/resetPassword.css';
 
 const ResetPasswordPage = ({setShowLogin}) => {
 	const [password, setPassword] = useState("");
@@ -25,7 +25,7 @@ const ResetPasswordPage = ({setShowLogin}) => {
 			toast.success("Password reset successfully, redirecting to login page...");
 			setTimeout(() => {
 				navigate("/");
-                setShowLogin(true);
+				setShowLogin(true);
 			}, 2000);
 		} catch (error) {
 			console.error(error);
@@ -46,9 +46,9 @@ const ResetPasswordPage = ({setShowLogin}) => {
 				{message && <p className='email-verification-subtitle'>{message}</p>}
 
 				<form className='email-verification-form' onSubmit={handleSubmit}>
-					<div className='relative mb-6'>
-						<div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
-							<Lock className='size-5 text-green-500' />
+					<div className='input-container'>
+						<div className='icon-container'>
+							<Lock className='lock-icon' />
 						</div>
 						<input
 							type='password'
@@ -56,13 +56,13 @@ const ResetPasswordPage = ({setShowLogin}) => {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
-							className='w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200'
+							className='password-input'
 						/>
 					</div>
 
-					<div className='relative mb-6'>
-						<div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
-							<Lock className='size-5 text-green-500' />
+					<div className='input-container'>
+						<div className='icon-container'>
+							<Lock className='lock-icon' />
 						</div>
 						<input
 							type='password'
@@ -70,7 +70,7 @@ const ResetPasswordPage = ({setShowLogin}) => {
 							value={confirmPassword}
 							onChange={(e) => setConfirmPassword(e.target.value)}
 							required
-							className='w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200'
+							className='password-input'
 						/>
 					</div>
 
