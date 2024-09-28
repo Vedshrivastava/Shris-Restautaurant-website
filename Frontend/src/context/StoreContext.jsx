@@ -21,7 +21,7 @@ const StoreContextProvider = (props) => {
   const [userId, setUserId] = useState(() => localStorage.getItem("userId") || "");
   const [userEmail, setUserEmail] = useState(() => localStorage.getItem("userEmail") || "");
   const [userName, setUserName] = useState(() => localStorage.getItem("userName") || "");
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [operationType, setOperationType] = useState(null);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [currentQuantity, setCurrentQuantity] = useState(null);
@@ -118,7 +118,7 @@ const StoreContextProvider = (props) => {
       setToken(savedToken);
       loadCartData(savedToken);
     }
-  }, [token]);
+  }, [isLoggedIn, token]);
 
   // Handle adding items
   useEffect(() => {
@@ -245,6 +245,8 @@ const StoreContextProvider = (props) => {
     userId,
     userName,
     userEmail,
+    isLoggedIn,
+    setIsLoggedIn,
     setToken,
     setUserId,
     setCartItems,

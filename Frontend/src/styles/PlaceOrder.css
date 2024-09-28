@@ -200,6 +200,10 @@ h2 {
     margin: 0 auto;
   }
 
+  .place-order-left{
+    margin-top: 70px !important;
+  }
+
   .place-order-right {
     padding: 10px; /* Further reduce padding */
     margin-top: 30px;

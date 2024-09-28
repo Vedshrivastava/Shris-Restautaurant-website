@@ -9,6 +9,6 @@ user.post('/login', loginUser);
 user.post('/verify-email', verifyEmail);
 user.post('/forgot-password', forgotPassword)
 user.post('/reset-password/:token', resetPassword);
-user.post('/check-auth', verifyToken, checkAuth);
+user.get('/check-auth', verifyToken, checkAuth);
 
 export default user;

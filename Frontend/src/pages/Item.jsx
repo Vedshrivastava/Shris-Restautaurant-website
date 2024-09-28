@@ -5,6 +5,7 @@ import { StoreContext } from '../context/StoreContext';
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 
 const Item = () => {
@@ -49,6 +50,7 @@ const Item = () => {
             setNewReview({ comment: '', rating: 1 });
         } catch (error) {
             console.error("Error adding review", error);
+            toast.error("Please Login First");
         }
     };
 

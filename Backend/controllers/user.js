@@ -40,6 +40,10 @@ const loginUser = async (req, res) => {
         email: user.email,
         cartItems: user.cartItems,
         message: "Logged in successfully",
+        user:{
+          ...user._doc,
+          password: undefined
+        },
       });
     }
   } catch (error) {
@@ -136,6 +140,10 @@ const registerUser = async (req, res) => {
       success: true,
       userId: user._id,
       message: "Account Created",
+      user:{
+        ...user._doc,
+        password: undefined
+      },
     });
   } catch (error) {
     console.log(error);
@@ -164,7 +172,7 @@ const forgotPassword = async (req, res) => {
 
     await user.save();
 
-    await sendPasswordResetEmail(user.email, `http://localhost:5173/api/user/reset-password/${resetToken}`);
+    await sendPasswordResetEmail(user.email, `http://localhost:5173/reset-password/${resetToken}`);
     
     return res.status(200).json({ success: true, message: "Password reset email sent" });
   } catch (error) {
@@ -212,7 +220,7 @@ const resetPassword = async (req, res) => {
 
 const checkAuth = async (req, res) => {
   try {
-    const user = userModel.findById(req.userId).select("-password"); //- so that the password is unselected so we do not need to set the pass as undefined.
+    const user = await userModel.findById(req.userId).select("-password"); //- so that the password is unselected so we do not need to set the pass as undefined.
     
     if(!user) return res.status(400).json({ success: false, message: "User not found" });
 

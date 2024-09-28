@@ -55,7 +55,7 @@
     color: tomato;
     font-size: 22px;
     font-weight: 500;
-    margin: 10px 0px;
+    margin: 0px;
 }
 
 .food-item-img-container {
@@ -90,7 +90,7 @@
 @media (max-width: 480px) {
     .food-item {
         flex-direction: row; /* Side by side layout */
-        height: 180px; /* Adjust height to auto for a better fit */
+        height: 170px; /* Adjust height to auto for a better fit */
         gap: 10px;
         border-radius: 15px;
         margin: 0px auto !important;
