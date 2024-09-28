@@ -13,6 +13,7 @@ import Item from './pages/Item';
 import Success from './pages/Success';
 import Email_verification from './pages/Email_verification';
 import ResetPassword from './pages/ResetPassword';
+import Search from './components/Search';
 import { useAuthStore } from './store/authStore';
 import { StoreContext } from './context/StoreContext';
 
@@ -67,14 +68,16 @@ const RedirectAuthenticatedUser = ({ children }) => {
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   return (
     <>
+    {showSearch && <Search setShowSearch={setShowSearch} />}
       {showLogin && <Login setShowLogin={setShowLogin} />}
       <div className='app'>
-        <Navbar setShowLogin={setShowLogin} />
+        <Navbar setShowLogin={setShowLogin} setShowSearch={setShowSearch}/>
         <Routes>
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Home setShowSearch={setShowSearch} />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/order' element={
             <ProtectedRoute setShowLogin={setShowLogin}>

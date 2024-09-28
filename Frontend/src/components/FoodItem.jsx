@@ -17,6 +17,7 @@ const FoodItem = ({ id, name, price, description, image }) => {
     const navigate = useNavigate();
     const { url } = useContext(StoreContext); 
 
+
     const handleClick = () => {
         navigate(`/item/${id}`, {
             state: {
@@ -24,8 +25,8 @@ const FoodItem = ({ id, name, price, description, image }) => {
                 name,
                 price,
                 description,
-                image
-            }
+                image,
+            },
         });
     }
 

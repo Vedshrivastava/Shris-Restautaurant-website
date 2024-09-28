@@ -82,4 +82,34 @@ const getReviewList = async (req, res) => {
     }
 };
 
-export { addFood, listFood, removeFood, getReviewList };
+const searchFood = async (req, res) => {
+    const { query } = req.query;
+
+    try {
+        if (!query) {
+            return res.status(400).json({ success: false, message: 'No search query provided' });
+        }
+
+        // Trim and remove extra spaces from the query
+        const cleanedQuery = query.replace(/\s+/g, '').toLowerCase();
+
+        // Search food by name using regex for case-insensitive and gap-insensitive search
+        const foods = await Food.find({
+            name: {
+                $regex: new RegExp(cleanedQuery, 'i')
+            }
+        });
+
+        if (foods.length === 0) {
+            return res.status(404).json({ success: false, message: 'No food items found' });
+        }
+
+        res.status(200).json({ success: true, data: foods });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error searching for food' });
+    }
+};
+
+
+export { addFood, listFood, removeFood, getReviewList, searchFood };

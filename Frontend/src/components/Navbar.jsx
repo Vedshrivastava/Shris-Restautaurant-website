@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../context/StoreContext';
 import {toast} from 'react-toastify'
 
-const Navbar = ({ setShowLogin }) => {
+const Navbar = ({ setShowLogin, setShowSearch }) => {
     const [menu, setMenu] = useState("home");
     const navigate = useNavigate();
     const { getTotalCartAmount, token, setToken, setUserId, setUserName, setUserEmail, setCartItems } = useContext(StoreContext);
@@ -85,7 +85,7 @@ const Navbar = ({ setShowLogin }) => {
                 </li>
             </ul>
             <div className='navbar-right'>
-                <img src={assets.search_icon} alt="Search" />
+                <img src={assets.search_icon} onClick={() => setShowSearch(true)} alt="Search" />
                 <div className="navbar-search-icon">
                     <Link to='/cart'><img src={assets.basket_icon} alt="Basket" /></Link>
                     <div className={getTotalCartAmount()?"dot":""}></div>

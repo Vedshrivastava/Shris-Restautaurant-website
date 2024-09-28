@@ -1,0 +1,94 @@
+.search {
+    position: fixed; /* Fixed to cover the entire viewport */
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000090; /* Semi-transparent background */
+    display: grid;
+    overflow: hidden; /* Prevent scrolling on the backdrop */
+}
+
+.search-container {
+    place-self: center; /* Center the container */
+    width: max(26vw, 360px); /* Responsive width */
+    color: #333; /* Text color */
+    background-color: white; /* Background color of the container */
+    display: flex; /* Flex layout */
+    flex-direction: column; /* Stack items vertically */
+    gap: 25px; /* Spacing between items */
+    padding: 25px 30px; /* Padding inside the container */
+    border-radius: 8px; /* Rounded corners */
+    font-size: 14px; /* Font size */
+    animation: fadeIn 0.5s; /* Fade-in animation */
+    max-height: 90vh; /* Limit height to viewport height */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.search-title {
+    display: flex; /* Flex layout */
+    justify-content: space-between; /* Space between title and icon */
+    align-items: center; /* Center vertically */
+    color: #333; /* Title color */
+}
+
+.clear-icon {
+    width: 16px; /* Icon size */
+    cursor: pointer; /* Pointer on hover */
+}
+
+.search-input {
+    outline: none; /* Remove outline on focus */
+    border: 1px solid #c9c9c9; /* Border color */
+    padding: 10px; /* Padding */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.food-display {
+    display: flex; /* Flex layout */
+    flex-direction: column; /* Stack items vertically */
+    gap: 10px; /* Spacing between food items */
+    max-height: 70vh; /* Limit height for food display */
+    overflow-y: auto; /* Enable vertical scrolling for food items */
+}
+
+.food-display::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+}
+
+.food-list {
+    display: grid; /* Grid layout for food items */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid */
+    gap: 40px; /* Spacing between grid items */
+    width: 80%;
+    margin: auto;
+}
+
+@media (max-width: 480px) {
+
+    .search{
+        padding-top: 70px;
+    }
+    
+    .search-container {
+        width: 85%;
+        padding: 0px !important;
+        height: auto;
+    }
+
+    .search-input{
+        width: 85%;
+        margin: auto;
+    }
+
+    .search-title{
+        width: 85%;
+        margin: auto;
+        margin-top: 20px;
+    }
+    
+    .food-list {
+        width: 100%;
+    }
+}

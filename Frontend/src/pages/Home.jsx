@@ -7,6 +7,7 @@ import FoodDisplay from '../components/FoodDisplay'
 const Home = () => {
 
   const [category, setCategory] = useState("All")
+  console.log("Type of setShowSearch:", typeof setShowSearch); // Should log "function"
 
   return (
     <div>
