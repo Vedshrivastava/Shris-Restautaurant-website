@@ -21,7 +21,7 @@ const StoreContextProvider = (props) => {
   const [userId, setUserId] = useState(() => localStorage.getItem("userId") || "");
   const [userEmail, setUserEmail] = useState(() => localStorage.getItem("userEmail") || "");
   const [userName, setUserName] = useState(() => localStorage.getItem("userName") || "");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
   const [operationType, setOperationType] = useState(null);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [currentQuantity, setCurrentQuantity] = useState(null);

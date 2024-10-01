@@ -2,28 +2,26 @@ import React, { useState, useContext } from 'react';
 import '../styles/Login.css';
 import { assets } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
-import { toast, ToastContainer } from 'react-toastify'; 
-import 'react-toastify/dist/ReactToastify.css'; 
-import { useNavigate } from 'react-router-dom'; 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
-import axios from 'axios';
-import { motion } from 'framer-motion';
 
 const Login = ({ setShowLogin }) => {
     const { signup, isLoading, login, forgotPassword } = useAuthStore();
-    const { setToken, setUserId, setUserName, setUserEmail, setCartItems, setIsLoggedIn } = useContext(StoreContext);
-    
-    const [currState, setCurrState] = useState("Login"); 
+    const { setToken, setUserId, setUserName, setUserEmail, setCartItems, setIsLoggedIn, isLoggedIn } = useContext(StoreContext);
+
+    const [currState, setCurrState] = useState("Login");
     const [data, setData] = useState({
         name: "",
         email: "",
         password: ""
     });
-    const [forgotEmail, setForgotEmail] = useState(""); 
-    const [isSubmitted, setIsSubmitted] = useState(false); 
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [isSubmitted, setIsSubmitted] = useState(false);
     const [resetMessage, setResetMessage] = useState(""); // New state for reset message
 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const onChangeHandler = (event) => {
         const name = event.target.name;
@@ -37,7 +35,7 @@ const Login = ({ setShowLogin }) => {
 
     const onLogin = async (event) => {
         event.preventDefault();
-        
+
         if (currState === "Sign Up") {
             try {
                 await signup(data.email, data.password, data.name);
@@ -52,7 +50,7 @@ const Login = ({ setShowLogin }) => {
                 const response = await forgotPassword(forgotEmail);
                 if (response.data.success) {
                     toast.success("Password reset link sent to your email.");
-                    setIsSubmitted(true); 
+                    setIsSubmitted(true);
                     setResetMessage("A password reset link has been sent to your email."); // Set reset message
                 } else {
                     toast.error(response.data.message || "Failed to send password reset link");
@@ -73,10 +71,15 @@ const Login = ({ setShowLogin }) => {
                     localStorage.setItem("cartItems", response.data.cartItems);
 
                     setCartItems(response.data.cartItems);
-                    setUserId(response.data.userId); 
+                    setUserId(response.data.userId);
                     setUserName(response.data.name);
                     setUserEmail(response.data.email);
                     setIsLoggedIn(true);
+                    setIsLoggedIn(true);
+                    setTimeout(() => {
+                        console.log("isLoggedIn after timeout:-->>", isLoggedIn);
+                    }, 0);
+
 
                     toast.success("Logged in successfully!");
                     setShowLogin(false);
@@ -157,7 +160,7 @@ const Login = ({ setShowLogin }) => {
                 </div>
                 <button type='submit' disabled={isLoading}>
                     {currState === 'Sign Up' ? (isLoading ? "Creating Account..." : "Create Account") :
-                    currState === 'Forgot Password' ? "Send Reset Link" : "Login"}
+                        currState === 'Forgot Password' ? "Send Reset Link" : "Login"}
                 </button>
                 {currState === 'Login' && (
                     <>

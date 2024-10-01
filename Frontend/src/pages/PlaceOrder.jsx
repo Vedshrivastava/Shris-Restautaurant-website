@@ -4,7 +4,6 @@ import { StoreContext } from "../context/StoreContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { loadStripe } from "@stripe/stripe-js";
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, user, food_list, cartItems, url } =
@@ -18,21 +17,21 @@ const PlaceOrder = () => {
     street: "",
     city: "Nagod",
     state: "Madhya Pradesh",
-    zipcode: "",
-    country: "",
+    zipcode: "485446",
+    country: "India",
     phone: "",
   });
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
+    console.log(`Field changed: ${name} = ${value}`); // Log field change
     setData((data) => ({ ...data, [name]: value }));
   };
 
-  const placeOrder = async (event) => {
+  const placeOrderPhonepe = async (event) => {
     event.preventDefault();
-
-    const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+    console.log("Placing order with PhonePe...");
 
     const orderItems = food_list
       .filter((item) => cartItems[item._id] > 0)
@@ -40,13 +39,15 @@ const PlaceOrder = () => {
         ...item,
         quantity: cartItems[item._id],
       }));
-    console.log(orderItems);
+    console.log("PhonePe order items:", orderItems);
 
-    let orderData = {
+    let orderDataPhonepe = {
       userId: localStorage.getItem("userId"),
       address: data,
       items: orderItems,
       amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0,
+      MID: 'MID' + Date.now(),
+      transactionId: 'T' + Date.now(),
       customer: {
         name: `${data.firstName} ${data.lastName}`,
         address: {
@@ -59,33 +60,28 @@ const PlaceOrder = () => {
       },
     };
 
+    console.log("PhonePe order data:", orderDataPhonepe);
+
     try {
-      let response = await axios.post(url + "/api/order/place", orderData, {
+      let responsePhonepe = await axios.post(url + "/api/order/order", orderDataPhonepe, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("PhonePe order response:", responsePhonepe.data);
 
-      if (response.data.success) {
-        // Retrieve the Stripe session ID from the backend response
-        const { sessionId } = response.data;
-
-        // Redirect to the Stripe checkout page
-        const result = await stripe.redirectToCheckout({ sessionId });
-
-        if (result.error) {
-          console.error(result.error.message);
-          alert("An error occurred during payment processing.");
-        }
+      if (responsePhonepe.data.success) {
+        window.location.href = responsePhonepe.data.data.instrumentResponse.redirectInfo.url;
       } else {
         alert("Error placing order.");
-        console.log(response.data.message);
+        console.log("PhonePe error message:", responsePhonepe.data.message);
       }
     } catch (error) {
-      console.error("Error placing order:", error);
+      console.error("Error placing PhonePe order:", error);
       alert("An error occurred. Please try again.");
     }
   };
 
   useEffect(() => {
+    console.log("Checking user token and cart amount...");
     if (!token) {
       navigate("/cart");
       toast.error("User Not SignedIn");
@@ -96,7 +92,7 @@ const PlaceOrder = () => {
   }, [token]);
 
   return (
-    <form onSubmit={placeOrder} className="place-order">
+    <form onSubmit={placeOrderPhonepe} className="place-order">
       <div className="place-order-left">
         <h2>Delivery Information</h2>
         <div className="multi-fields">
@@ -159,12 +155,12 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           value={data.phone}
           type="text"
-          placeholder="phone"
+          placeholder="Phone"
         />
       </div>
       <div className="place-order-right">
         <div className="cart-total">
-          <h2>Cart Total </h2>
+          <h2>Cart Total</h2>
         </div>
         <div className="cart-total-details">
           <p>Subtotal</p>
@@ -172,7 +168,7 @@ const PlaceOrder = () => {
         </div>
         <hr />
         <div className="cart-total-details">
-          <p>delivery fee</p>
+          <p>Delivery Fee</p>
           <p>₹{getTotalCartAmount() ? 20 : 0}</p>
         </div>
         <hr />
