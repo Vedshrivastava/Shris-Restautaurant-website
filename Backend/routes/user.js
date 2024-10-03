@@ -1,6 +1,8 @@
 import express from 'express'
 import { forgotPassword, loginUser, registerUser, resetPassword, verifyEmail, checkAuth } from '../controllers/user.js'
 import { verifyToken } from '../middlewares/verifyToken.js';
+import { authMiddleware } from '../middlewares/auth.js';
+
 
 const user = express.Router();
 

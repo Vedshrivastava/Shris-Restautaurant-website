@@ -80,6 +80,76 @@ const PlaceOrder = () => {
     }
   };
 
+  const placeOrderCod = async (event) => {
+    event.preventDefault();
+    console.log("Placing order with Cash on Delivery (COD)...");
+
+    // Check if all required fields are filled out
+    const { firstName, lastName, email, street, city, state, zipcode, phone } = data;
+    if (!firstName || !lastName || !email || !street || !city || !state || !zipcode || !phone) {
+        alert("Please fill out all required fields.");
+        return; // Stop the function if any required field is empty
+    }
+
+    // Log the current data state
+    console.log("Current form data:", data);
+
+    // Filter cart items to get only those with quantities > 0
+    const orderItems = food_list
+      .filter((item) => cartItems[item._id] > 0)
+      .map((item) => ({
+        ...item,
+        quantity: cartItems[item._id],
+      }));
+
+    console.log("COD order items:", orderItems);
+
+    // Construct order data with user details and calculated amount
+    let orderDataCod = {
+      userId: localStorage.getItem("userId"),
+      address: data, // Customer address data from state
+      items: orderItems, // Order items
+      amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0, // Total amount including any additional charges
+      customer: {
+        name: `${data.firstName} ${data.lastName}`,
+        address: {
+          line1: data.street,
+          city: data.city,
+          postal_code: data.zipcode,
+          state: data.state,
+          country: data.country,
+        },
+      },
+    };
+
+    console.log("COD order data:", orderDataCod);
+
+    try {
+      // Sending POST request to the backend with authorization and CORS credentials
+      let responseCod = await axios.post(url + "/api/order/cod", orderDataCod, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("COD order response:", responseCod.data);
+
+      // Handling success response
+      if (responseCod.data.success) {
+        console.log("COD order placed successfully, navigating to success page.");
+        navigate("/success"); // Navigate to success page
+      } else {
+        // Handling failed order
+        console.error("Error placing COD order:", responseCod.data.message);
+        alert("Error placing COD order: " + responseCod.data.message);
+      }
+    } catch (error) {
+      // Catching and logging any errors during the process
+      console.error("Error occurred while placing COD order:", error);
+      alert("An error occurred while placing the order. Please try again.");
+    }
+};
+
+  
+
   useEffect(() => {
     console.log("Checking user token and cart amount...");
     if (!token) {
@@ -177,7 +247,10 @@ const PlaceOrder = () => {
           <b>₹{getTotalCartAmount() ? getTotalCartAmount() + 20 : 0}</b>
         </div>
         <div className="button-container">
-          <button type="submit">PROCEED TO PAYMENT</button>
+          <button type="submit">PAY ONLINE</button>
+        </div>
+        <div className="button-container">
+        <button type="button" onClick={placeOrderCod}>CASH ON DELIVERY</button>
         </div>
       </div>
     </form>

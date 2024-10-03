@@ -16,7 +16,6 @@ const userOrders = async (req, res) => {
         // Fetch paid orders for the user
         const orders = await Order.find({
             userId: req.userId,
-            payment: true
         }).sort({ date: -1 });
 
         res.json({ success: true, data: orders });
@@ -29,7 +28,7 @@ const userOrders = async (req, res) => {
 // List all paid orders
 const listOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ payment: true }).sort({ date: -1 });
+        const orders = await Order.find({}).sort({ date: -1 });
         res.json({ success: true, data: orders });
     } catch (error) {
         console.error(error);
@@ -188,7 +187,31 @@ const status = async (req, res) => {
     }
 };
 
+const codOrder = async (req, res) => {
+    try {
+        console.log("Received COD order request:", req.body);
+
+        const newOrder = new Order({
+            userId: req.body.userId,
+            items: req.body.items,
+            amount: req.body.amount,
+            address: req.body.address,
+            payment: false
+        });
+
+        const savedOrder = await newOrder.save();
+        const transactionId = savedOrder._id;
+
+        console.log("Transaction ID for COD order:", transactionId);
+
+        const successUrl = `http://localhost:5173/success`;
+        return res.status(200).json({ success: true, successUrl });
+
+    } catch (error) {
+        console.error("Error occurred while processing COD order:", error.message);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 
-
-export { userOrders, listOrders, updateStatus, phonepeOrder, status };
+export { userOrders, listOrders, updateStatus, phonepeOrder, status, codOrder };

@@ -20,7 +20,7 @@ const port = 4000
 app.use(express.json())
 app.use(cookieParser())
 
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5177", "http://localhost:4000", "null"]; // Added "null" for mobile apps or local files
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5174", "http://localhost:4000", "null"]; // Added "null" for mobile apps or local files
 
 // CORS middleware configuration
 app.use(cors({

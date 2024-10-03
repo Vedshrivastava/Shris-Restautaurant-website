@@ -11,7 +11,11 @@ const List = ({url}) => {
   const [list, setList] = useState([]);
 
   const fetchList = async () => {
-    const response = await axios.get(`${url}/api/food/list`);
+    const token = localStorage.getItem('token'); // Assuming you're storing the token in local storage
+    const response = await axios.get(`${url}/api/food/list`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    
     if(response.data.success) {
       setList(response.data.data);
     } else {

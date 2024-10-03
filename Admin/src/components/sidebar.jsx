@@ -2,10 +2,13 @@ import React from 'react'
 import '../styles/sidebar.css'
 import { assets } from '../assets/admin_assets/assets'
 import {NavLink} from 'react-router-dom'
+import Navbar from './Navbar'
 
 const sidebar = () => {
+    <Navbar/>
+
   return (
-    <div className='sidebar'>
+        <div className='sidebar'>
         <div className="sidebar-options">
             <NavLink to='/add' className="sidebar-option">
                 <img src={assets.add_icon} alt="" />

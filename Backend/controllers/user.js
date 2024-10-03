@@ -5,7 +5,6 @@ import crypto from 'crypto';
 import { sendVerificationEmail, sendWelcomeEmail, sendResetSuccessEmail, sendPasswordResetEmail } from "../middlewares/emails.js";
 import {
   signTokenForConsumer,
-  signTokenForAdmin,
 } from "../middlewares/index.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 
