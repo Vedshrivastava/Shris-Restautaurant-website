@@ -12,7 +12,7 @@ const List = ({url}) => {
 
   const fetchList = async () => {
     const token = localStorage.getItem('token'); // Assuming you're storing the token in local storage
-    const response = await axios.get(`${url}/api/food/list`, {
+    const response = await axios.get(`${url}/api/food/admin-list`, {
         headers: { Authorization: `Bearer ${token}` }
     });
     
