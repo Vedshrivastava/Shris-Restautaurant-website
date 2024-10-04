@@ -4,14 +4,16 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { assets } from '../assets/admin_assets/assets';
 import moment from 'moment'; // Import moment.js for date formatting
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
 
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
+  const {token} = useContext(StoreContext);
 
   // Fetch all orders (whether paid or unpaid)
   const fetchAllOrders = async () => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve the token from local storage
       const response = await axios.get(`${url}/api/order/list`, {
         headers: { Authorization: `Bearer ${token}` }, // Add the Authorization header
       });

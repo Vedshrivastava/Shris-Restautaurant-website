@@ -5,13 +5,15 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 import '../index.css'
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
 
 const List = ({url}) => {
 
   const [list, setList] = useState([]);
+  const {token} = useContext(StoreContext);
 
   const fetchList = async () => {
-    const token = localStorage.getItem('token'); // Assuming you're storing the token in local storage
     const response = await axios.get(`${url}/api/food/admin-list`, {
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -26,7 +28,8 @@ const List = ({url}) => {
   const removeFood = async (foodId) => {
     try {
         const response = await axios.delete(`${url}/api/food/remove`, {
-            data: { _id: foodId }
+            data: { _id: foodId },
+            headers: { Authorization: `Bearer ${token}` }
         });
         if (response.data.success) {
             await fetchList();

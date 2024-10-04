@@ -3,9 +3,12 @@ import '../styles/list-categories.css'; // Ensure this is the updated CSS file
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import '../index.css';
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
 
 const ListCategory = ({ url }) => {
     const [categories, setCategories] = useState([]);
+    const {token} = useContext(StoreContext);
 
     const fetchCategories = async () => {
         try {
@@ -23,7 +26,8 @@ const ListCategory = ({ url }) => {
     const removeCategory = async (categoryId) => {
         try {
             const response = await axios.delete(`${url}/api/category/remove`, {
-                data: { _id: categoryId }
+                data: { _id: categoryId },
+                headers: {Authorization: `Bearer ${token}`}
             });
             if (response.data.success) {
                 await fetchCategories();

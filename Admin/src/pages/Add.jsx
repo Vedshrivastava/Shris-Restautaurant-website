@@ -4,6 +4,8 @@ import { assets } from '../assets/admin_assets/assets';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import '../index.css';
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
 
 const Add = ({ url }) => {
     const [image, setImage] = useState(null); // Use null instead of false for images
@@ -14,6 +16,7 @@ const Add = ({ url }) => {
         category: "" // This will now store the category name
     });
     const [categories, setCategories] = useState([]);
+    const {token} = useContext(StoreContext)
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -54,7 +57,9 @@ const Add = ({ url }) => {
         if (image) formData.append("image", image);
 
         try {
-            const response = await axios.post(`${url}/api/food/add`, formData);
+            const response = await axios.post(`${url}/api/food/add`, formData, {
+                headers: { Authorization: `Bearer ${token}` }, // Add the Authorization header
+              });
             if (response.data.success) {
                 setData({
                     name: "",

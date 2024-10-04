@@ -3,6 +3,10 @@
     font-size: 16px;
 }
 
+.add-category-image img{
+    width: 10%;
+}
+
 .add-category-panel form {
     display: flex;
     flex-direction: column;

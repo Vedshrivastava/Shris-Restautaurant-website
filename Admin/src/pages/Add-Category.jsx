@@ -4,10 +4,13 @@ import { toast } from 'react-toastify';
 import '../index.css';
 import '../styles/add-category.css';
 import { assets } from '../assets/admin_assets/assets.js';
+import { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
 
 const AddCategory = ({ url, onCategoryAdded }) => {
     const [category, setCategory] = useState('');
     const [image, setImage] = useState(null);
+    const {token} = useContext(StoreContext);
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();
@@ -21,6 +24,7 @@ const AddCategory = ({ url, onCategoryAdded }) => {
             const response = await axios.post(`${url}/api/category/add-category`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
                 },
             });
 
