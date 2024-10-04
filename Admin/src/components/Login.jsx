@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import '../styles/Login.css';
-import { assets } from '../assets/frontend_assets/assets';
+import { assets_frontend } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
