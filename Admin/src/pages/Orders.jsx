@@ -75,7 +75,7 @@ const Orders = ({ url }) => {
             <p>Items: {order.items.length}</p>
             <p>₹{order.amount}</p>
             <p style={{ color: order.payment ? 'green' : 'red' }}>
-             {order.payment ? 'Paid' : 'Pending'}
+             {order.payment ? 'Paid' : 'Unpaid'}
             </p>
 
             <select

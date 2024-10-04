@@ -10,27 +10,42 @@ import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+
   try {
+    // Find user by email
     const user = await userModel.findOne({ email });
 
+    // Check if user exists
     if (!user) {
-      return res.status(401).json({ success: false, message: "The user does not exist" });
+      return res.status(401).json({
+        success: false,
+        message: "The user does not exist",
+      });
     }
 
+    // Compare provided password with stored password
     const isMatch = await bcrypt.compare(password, user.password);
 
+    // Check if password matches
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Wrong password" });
+      return res.status(401).json({
+        success: false,
+        message: "Wrong password",
+      });
     }
 
-    let tokenData = {
+    // Prepare token data
+    const tokenData = {
       id: user._id,
-      email: email,
       name: user.name,
+      email: user.email,
     };
 
-    if (user.role === "USER") {
-      const token = await signTokenForConsumer(tokenData);
+    // Generate token for the user
+    const token = await signTokenForConsumer(tokenData);
+
+    // Check if the token was generated
+    if (token) {
       return res.status(200).json({
         success: true,
         token,
@@ -39,20 +54,26 @@ const loginUser = async (req, res) => {
         email: user.email,
         cartItems: user.cartItems,
         message: "Logged in successfully",
-        user:{
+        user: {
           ...user._doc,
-          password: undefined
+          password: undefined, // Exclude password
         },
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Error generating token",
       });
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({
       success: false,
-      message: "Some Internal Error Occurred",
+      message: "Some internal error occurred",
     });
   }
 };
+
 
 const verifyEmail = async (req, res) => {
 
