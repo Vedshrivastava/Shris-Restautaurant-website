@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, user, food_list, cartItems, url } =
+  const { getTotalCartAmount, token, setCartItems, food_list, cartItems, url } =
     useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -83,33 +83,29 @@ const PlaceOrder = () => {
   const placeOrderCod = async (event) => {
     event.preventDefault();
     console.log("Placing order with Cash on Delivery (COD)...");
-
-    // Check if all required fields are filled out
+  
     const { firstName, lastName, email, street, city, state, zipcode, phone } = data;
     if (!firstName || !lastName || !email || !street || !city || !state || !zipcode || !phone) {
-        alert("Please fill out all required fields.");
-        return; // Stop the function if any required field is empty
+      alert("Please fill out all required fields.");
+      return;
     }
-
-    // Log the current data state
+  
     console.log("Current form data:", data);
-
-    // Filter cart items to get only those with quantities > 0
+  
     const orderItems = food_list
       .filter((item) => cartItems[item._id] > 0)
       .map((item) => ({
         ...item,
         quantity: cartItems[item._id],
       }));
-
+  
     console.log("COD order items:", orderItems);
-
-    // Construct order data with user details and calculated amount
+  
     let orderDataCod = {
       userId: localStorage.getItem("userId"),
-      address: data, // Customer address data from state
-      items: orderItems, // Order items
-      amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0, // Total amount including any additional charges
+      address: data,
+      items: orderItems,
+      amount: getTotalCartAmount() ? getTotalCartAmount() + 20 : 0,
       customer: {
         name: `${data.firstName} ${data.lastName}`,
         address: {
@@ -121,33 +117,35 @@ const PlaceOrder = () => {
         },
       },
     };
-
+  
     console.log("COD order data:", orderDataCod);
-
+  
     try {
-      // Sending POST request to the backend with authorization and CORS credentials
       let responseCod = await axios.post(url + "/api/order/cod", orderDataCod, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       console.log("COD order response:", responseCod.data);
-
-      // Handling success response
+  
       if (responseCod.data.success) {
-        console.log("COD order placed successfully, navigating to success page.");
+        // Clear cart in the frontend
+        console.log("COD order placed successfully, clearing cart...");
+  
+        // Assuming you have a function or context state to clear the cart
+        setCartItems([]); // Update your cart state to be empty
+        localStorage.removeItem("cartItems"); // Clear localStorage if cart is stored there
+  
         navigate("/success"); // Navigate to success page
       } else {
-        // Handling failed order
         console.error("Error placing COD order:", responseCod.data.message);
         alert("Error placing COD order: " + responseCod.data.message);
       }
     } catch (error) {
-      // Catching and logging any errors during the process
       console.error("Error occurred while placing COD order:", error);
       alert("An error occurred while placing the order. Please try again.");
     }
-};
-
+  };
+  
   
 
   useEffect(() => {

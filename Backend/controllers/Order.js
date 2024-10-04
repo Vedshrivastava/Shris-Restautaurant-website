@@ -204,6 +204,12 @@ const codOrder = async (req, res) => {
 
         console.log("Transaction ID for COD order:", transactionId);
 
+        const order = await Order.findById(transactionId);  
+        const userId = order.userId;  
+
+        // Clear the cart data for the user
+        await userModel.findByIdAndUpdate(userId, { $set: { cartData: {} } });
+
         const successUrl = `http://localhost:5173/success`;
         return res.status(200).json({ success: true, successUrl });
 
