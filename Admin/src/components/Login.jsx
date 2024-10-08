@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import '../styles/Login.css';
 import { assets_frontend } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
+import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 
 const Login = ({ setShowLogin }) => {
     const { signup, isLoading, login, forgotPassword } = useAuthStore();
@@ -70,20 +71,37 @@ const Login = ({ setShowLogin }) => {
                     }
 
                     // Proceed with the login process if the user is an admin
-                    setToken(response.data.token);
-                    localStorage.setItem("token", response.data.token);
-                    localStorage.setItem("userId", response.data.userId);
-                    localStorage.setItem("userName", response.data.name);
-                    localStorage.setItem("userEmail", response.data.email);
+                    const token = response.data.token;
+                    setToken(token);
+                    localStorage.setItem("token", token);
 
-                    setUserId(response.data.userId);
-                    setUserName(response.data.name);
-                    setUserEmail(response.data.email);
+                    // Decode the token to get user info
+                    const decodedToken = jwtDecode(token); 
+                    console.log("Decoded Token:", decodedToken);
+
+                    localStorage.setItem("userId", decodedToken.id);
+                    localStorage.setItem("userName", decodedToken.name);
+                    localStorage.setItem("userEmail", decodedToken.email);
+
+                    // Set user information in context
+                    setUserId(decodedToken.id);
+                    setUserName(decodedToken.name);
+                    setUserEmail(decodedToken.email);
                     setIsLoggedIn(true);
 
                     toast.success("Logged in successfully!");
                     setShowLogin(false);
                     navigate('/');
+
+                    // Set logout timer
+                    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+                    const logoutTime = expirationTime - Date.now(); // 5 minutes before expiration
+
+                    if (logoutTime > 0) {
+                        setTimeout(() => {
+                            handleLogout();
+                        }, logoutTime);
+                    }
                 } else {
                     toast.error(response.data.message || "Login failed");
                 }
@@ -92,6 +110,17 @@ const Login = ({ setShowLogin }) => {
                 toast.error('Something went wrong during login');
             }
         }
+    };
+
+    const handleLogout = () => {
+        setToken(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        setIsLoggedIn(false);
+        toast.info("You have been logged out due to inactivity.");
+        navigate('/login'); // Redirect to login or any other page
     };
 
     return (
