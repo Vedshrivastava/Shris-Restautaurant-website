@@ -6,10 +6,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
+import { jwtDecode } from "jwt-decode";
 
 const Login = ({ setShowLogin }) => {
     const { signup, isLoading, login, forgotPassword } = useAuthStore();
-    const { setToken, setUserId, setUserName, setUserEmail, setCartItems, setIsLoggedIn, isLoggedIn } = useContext(StoreContext);
+    const { setToken, setUserId, setUserName, setUserEmail, setCartItems, setIsLoggedIn } = useContext(StoreContext);
 
     const [currState, setCurrState] = useState("Login");
     const [data, setData] = useState({
@@ -31,6 +32,18 @@ const Login = ({ setShowLogin }) => {
 
     const onForgotEmailChange = (event) => {
         setForgotEmail(event.target.value);
+    };
+
+    const handleLogout = () => {
+        // Clear stored data on logout
+        setToken(null);
+        setUserId(null);
+        setUserName(null);
+        setUserEmail(null);
+        setIsLoggedIn(false);
+        localStorage.clear(); // Clear localStorage on logout
+        toast.info("Session expired. Please log in again.");
+        navigate('/login');
     };
 
     const onLogin = async (event) => {
@@ -63,8 +76,9 @@ const Login = ({ setShowLogin }) => {
             try {
                 const response = await login(data.email, data.password);
                 if (response.data.success) {
-                    setToken(response.data.token);
-                    localStorage.setItem("token", response.data.token);
+                    const token = response.data.token; // Extract token from response
+                    setToken(token);
+                    localStorage.setItem("token", token);
                     localStorage.setItem("userId", response.data.userId);
                     localStorage.setItem("userName", response.data.name);
                     localStorage.setItem("userEmail", response.data.email);
@@ -75,11 +89,15 @@ const Login = ({ setShowLogin }) => {
                     setUserName(response.data.name);
                     setUserEmail(response.data.email);
                     setIsLoggedIn(true);
-                    setIsLoggedIn(true);
-                    setTimeout(() => {
-                        console.log("isLoggedIn after timeout:-->>", isLoggedIn);
-                    }, 0);
 
+                    // Decode the token to check expiration
+                    const decodedToken = jwtDecode(token);
+                    const expirationTime = decodedToken.exp * 1000 - Date.now(); // Calculate time until expiration
+
+                    // Set a timeout to log the user out when the token expires
+                    setTimeout(() => {
+                        handleLogout();  // Call handleLogout function when the token expires
+                    }, expirationTime);
 
                     toast.success("Logged in successfully!");
                     setShowLogin(false);
