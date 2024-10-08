@@ -94,8 +94,8 @@ const Login = ({ setShowLogin }) => {
                     navigate('/');
 
                     // Set logout timer
-                    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
-                    const logoutTime = expirationTime - Date.now(); // 5 minutes before expiration
+                    const expirationTime = decodedToken.exp * 1000;
+                    const logoutTime = expirationTime - Date.now();
 
                     if (logoutTime > 0) {
                         setTimeout(() => {
