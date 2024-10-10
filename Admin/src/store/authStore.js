@@ -9,31 +9,6 @@ export const useAuthStore = create((set) => ({
     isLoading: false,
     isCheckingAuth: true,
 
-    signup: async (email, password, name) => {
-        set({
-            isLoading: true,
-            error: null
-        });
-        console.log("isLoading (signup start):", true); // Log when isLoading is true
-        try {
-            const response = await axios.post(`http://localhost:4000/api/admin/register-admin`, { email, password, name });
-            const { user } = response.data;
-            
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('isAuthenticated', 'true');
-            
-            set({ user, isAuthenticated: true, isLoading: false });
-            console.log("Signup response :--->> ", response.data);
-            console.log("isLoading (signup end):", false); // Log when isLoading is false
-
-            return response;
-        } catch (error) {
-            set({ error: error.response.data.message || "Error signing up", isLoading: false });
-            console.log("isLoading (signup error):", false); // Log when isLoading becomes false due to an error
-            throw error;
-        }
-    },
-
     login: async (email, password) => {
         set({ isLoading: true, error: null });
         console.log("isLoading (login start):", true); // Log when isLoading is true
@@ -52,28 +27,6 @@ export const useAuthStore = create((set) => ({
         } catch (error) {
             set({ error: error.response.data.message || "Error logging in", isLoading: false });
             console.log("isLoading (login error):", false); // Log when isLoading becomes false due to an error
-            throw error;
-        }
-    },
-
-    verifyEmail: async (code) => {
-        set({ isLoading: true, error: null });
-        console.log("isLoading (verifyEmail start):", true); // Log when isLoading is true
-        try {
-            const response = await axios.post(`http://localhost:4000/api/user/verify-email`, { code });
-            const { user } = response.data;
-
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('isAuthenticated', 'true');
-            
-            set({ user, isAuthenticated: true, isLoading: false });
-            console.log("Email verification response :--->> ", response.data);
-            console.log("isLoading (verifyEmail end):", false); // Log when isLoading is false
-
-            return response;
-        } catch (error) {
-            set({ error: error.response.data.message || "Error verifying email", isLoading: false });
-            console.log("isLoading (verifyEmail error):", false); // Log when isLoading becomes false due to an error
             throw error;
         }
     },

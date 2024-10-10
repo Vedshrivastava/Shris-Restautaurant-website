@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import '../styles/Login.css';
 import { assets_frontend } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
@@ -6,15 +6,14 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
+import jwtDecode from 'jwt-decode'; // Import jwt-decode
 
 const Login = ({ setShowLogin }) => {
-    const { signup, isLoading, login, forgotPassword } = useAuthStore();
+    const { isLoading, login, forgotPassword } = useAuthStore(); // Removed signup
     const { setToken, setUserId, setUserName, setUserEmail, setIsLoggedIn } = useContext(StoreContext);
 
     const [currState, setCurrState] = useState("Login");
     const [data, setData] = useState({
-        name: "",
         email: "",
         password: ""
     });
@@ -37,16 +36,7 @@ const Login = ({ setShowLogin }) => {
     const onLogin = async (event) => {
         event.preventDefault();
 
-        if (currState === "Sign Up") {
-            try {
-                await signup(data.email, data.password, data.name);
-                toast.success("Account created! Please verify your email.");
-                setShowLogin(false);
-                navigate('/verify-email');
-            } catch (error) {
-                toast.error(error.message || "Error during sign-up");
-            }
-        } else if (currState === "Forgot Password") {
+        if (currState === "Forgot Password") {
             try {
                 const response = await forgotPassword(forgotEmail);
                 if (response.data.success) {
@@ -131,34 +121,7 @@ const Login = ({ setShowLogin }) => {
                     <img onClick={() => setShowLogin(false)} src={assets_frontend.cross_icon} alt="Close" />
                 </div>
                 <div className="login-inputs">
-                    {currState === 'Sign Up' ? (
-                        <>
-                            <input
-                                name='name'
-                                onChange={onChangeHandler}
-                                value={data.name}
-                                type='text'
-                                placeholder='Your name'
-                                required
-                            />
-                            <input
-                                name='email'
-                                onChange={onChangeHandler}
-                                value={data.email}
-                                type='email'
-                                placeholder='Your Email'
-                                required
-                            />
-                            <input
-                                name='password'
-                                onChange={onChangeHandler}
-                                value={data.password}
-                                type='password'
-                                placeholder='Enter your password'
-                                required
-                            />
-                        </>
-                    ) : currState === 'Forgot Password' ? (
+                    {currState === 'Forgot Password' ? (
                         <input
                             name='forgotEmail'
                             onChange={onForgotEmailChange}
@@ -189,20 +152,15 @@ const Login = ({ setShowLogin }) => {
                     )}
                 </div>
                 <button type='submit' disabled={isLoading}>
-                    {currState === 'Sign Up' ? (isLoading ? "Creating Account..." : "Create Account") :
-                        currState === 'Forgot Password' ? "Send Reset Link" : "Login"}
+                    {currState === 'Forgot Password' ? "Send Reset Link" : "Login"}
                 </button>
                 {currState === 'Login' && (
                     <>
                         <p>Forgot your password? <span onClick={() => setCurrState("Forgot Password")}>Reset</span></p>
-                        <p>Don't have an account? <span onClick={() => setCurrState("Sign Up")}>Sign Up</span></p>
                     </>
                 )}
                 {currState === 'Forgot Password' && (
                     <p>Remembered your password? <span onClick={() => setCurrState("Login")}>Login</span></p>
-                )}
-                {currState === 'Sign Up' && (
-                    <p>Already have an account? <span onClick={() => setCurrState("Login")}>Login</span></p>
                 )}
                 {isSubmitted && resetMessage && (
                     <div className='submitted-message'>
