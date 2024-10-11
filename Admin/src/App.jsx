@@ -12,7 +12,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute'; // Import your ProtectedRoute component
-import Email_verification from './components/Email_verification'
 import {Navigate} from 'react-router-dom';
 
 const App = () => {
