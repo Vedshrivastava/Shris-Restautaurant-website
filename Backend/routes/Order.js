@@ -1,6 +1,6 @@
 import express from 'express'
 import {adminAuthMiddleware, authMiddleware} from '../middlewares/auth.js';
-import { userOrders, listOrders, phonepeOrder, status, codOrder } from '../controllers/Order.js';
+import { userOrders, listOrders, phonepeOrder, codOrder, updateStatus } from '../controllers/Order.js';
 
 const order = express.Router()
 
@@ -10,7 +10,7 @@ order.get('/list', adminAuthMiddleware, listOrders)
 
 order.post('/order', phonepeOrder)
 
-order.post('/status', status)
+order.post('/status', updateStatus)
 
 order.post('/cod', codOrder)
 

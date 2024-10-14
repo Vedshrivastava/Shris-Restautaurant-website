@@ -6,7 +6,7 @@ import Cart from './pages/Cart';
 import PlaceOrder from './pages/PlaceOrder';
 import Footer from './components/Footer';
 import Login from './components/Login';
-import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import { ToastContainer } from 'react-toastify'; 
 import Verify from './pages/Verify';
 import MyOrders from './pages/MyOrders';
 import Item from './pages/Item';
@@ -17,20 +17,17 @@ import Search from './components/Search';
 import { useAuthStore } from './store/authStore';
 import { StoreContext } from './context/StoreContext';
 
-const ProtectedRoute = ({ children, setShowLogin }) => {
-  const { isAuthenticated, user } = useAuthStore();
-  const { isLoggedIn } = useContext(StoreContext); // Get isLoggedIn from context
+const ProtectedRoute = ({ children }) => {
+  const { user } = useAuthStore();
+  const { isLoggedIn } = useContext(StoreContext); 
   
-  // Logging authentication and verification states
   console.log("ProtectedRoute Rendered");
-  console.log("isAuthenticated:", isAuthenticated);
   console.log("User:", user);
   console.log("isLoggedIn:", isLoggedIn);
 
-  // Check if the user is not verified
   if (!user.isVerified) {
     console.log("User is not verified. Redirecting to verification page.");
-    return <Navigate to='/verify-email' replace />; // Redirect to verification page
+    return <Navigate to='/verify-email' replace />; 
   }
 
   if (!isLoggedIn) {
@@ -39,13 +36,12 @@ const ProtectedRoute = ({ children, setShowLogin }) => {
   }
 
   console.log("User is authenticated and verified. Rendering children.");
-  return children; // Render children if authenticated and verified
+  return children; 
 };
 
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  // Logging authenticated user state
   console.log("RedirectAuthenticatedUser Rendered");
   console.log("isAuthenticated:", isAuthenticated);
   console.log("User:", user);
@@ -97,7 +93,7 @@ const App = () => {
 
       </div>
       <Footer />
-      <ToastContainer /> {/* Place ToastContainer here */}
+      <ToastContainer />
     </>
   );
 };

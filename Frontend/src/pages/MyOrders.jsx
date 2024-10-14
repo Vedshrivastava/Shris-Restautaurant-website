@@ -3,11 +3,15 @@ import '../styles/myorders.css';
 import { StoreContext } from '../context/StoreContext';
 import axios from 'axios';
 import { assets } from '../assets/frontend_assets/assets';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MyOrders = () => {
     const [data, setData] = useState([]);
+    const [prevStatuses, setPrevStatuses] = useState({}); // To track previous statuses
     const { url, token } = useContext(StoreContext);
 
+    // Fetch all orders initially
     const fetchOrders = async () => {
         try {
             const response = await axios.post(
@@ -16,8 +20,42 @@ const MyOrders = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setData(response.data.data);
+
+            // Store previous statuses for comparison
+            const statuses = {};
+            response.data.data.forEach(order => {
+                statuses[order._id] = order.status;
+            });
+            setPrevStatuses(statuses);
         } catch (error) {
             console.error("Error fetching orders:", error);
+        }
+    };
+
+    // Function to check for status updates
+    const trackOrder = async (orderId, currentStatus) => {
+        try {
+            const response = await axios.post(
+                `${url}/api/order/user-orders`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            const updatedOrder = response.data.data.find(order => order._id === orderId);
+
+            if (updatedOrder) {
+                // Compare the status
+                if (updatedOrder.status === currentStatus) {
+                    toast.error('No updates yet', { autoClose: 1500 }); // Ensure toast auto closes
+                } else {
+                    toast.success('Order status updated', { autoClose: 1500 });
+                    setTimeout(() => {
+                        window.location.reload(); // Refresh the page after 3 seconds
+                    }, 1500);                }
+            }
+        } catch (error) {
+            console.error("Error tracking order:", error);
+            toast.error('Failed to track order', { autoClose: 1500 });
         }
     };
 
@@ -47,10 +85,13 @@ const MyOrders = () => {
                         <p>
                             <span>&#x25cf;</span> <b>{order.status}</b>
                         </p>
-                        <button onClick={fetchOrders}>Track Order</button>
+                        <button onClick={() => trackOrder(order._id, order.status)}>
+                            Track Order
+                        </button>
                     </div>
                 ))}
             </div>
+            <ToastContainer /> {/* Only one ToastContainer, make sure it's not duplicated */}
         </div>
     );
 };
