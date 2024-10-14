@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 
-
 const Item = () => {
     const { token, url, userId, userName } = useContext(StoreContext);
     const location = useLocation();
@@ -15,6 +14,7 @@ const Item = () => {
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState({ comment: '', rating: 1 });
     const [editReview, setEditReview] = useState(null);
+    const [showReviewForm, setShowReviewForm] = useState(false); // New state for showing the review form
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -34,6 +34,12 @@ const Item = () => {
 
     const handleAddReview = async (event) => {
         event.preventDefault();
+    
+        if (!token) {
+            toast.error("Please Login First");
+            return;
+        }
+    
         try {
             const response = await axios.post(
                 `${url}/api/review/add`,
@@ -46,11 +52,19 @@ const Item = () => {
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+    
+            // If successful, update the review list
             setReviews([...reviews, response.data.review]);
             setNewReview({ comment: '', rating: 1 });
+            setShowReviewForm(false); // Hide the review form after submission
+    
         } catch (error) {
             console.error("Error adding review", error);
-            toast.error("Please Login First");
+            if (error.response && error.response.status === 401) {
+                toast.error("Please Login First");
+            } else {
+                toast.error("Failed to add review, please try again.");
+            }
         }
     };
 
@@ -74,7 +88,7 @@ const Item = () => {
     const handleDeleteReview = async (reviewId) => {
         try {
             await axios.delete(`${url}/api/review/delete/${reviewId}`, {
-                headers: { Authorization: `Bearer ${token}` }  
+                headers: { Authorization: `Bearer ${token}` }
             });
             setReviews(reviews.filter(review => review._id !== reviewId));
         } catch (error) {
@@ -121,8 +135,13 @@ const Item = () => {
                 <p className='price'>₹{price}</p>
             </div>
             <div className='reviews-section'>
+                {/* Add Review Button */}
+                <button className='add-review-button' onClick={() => setShowReviewForm(!showReviewForm)}>
+                    {showReviewForm ? 'Cancel' : 'Add a Review'}
+                </button>
+
                 {/* Add Review Form */}
-                {!editReview && (
+                {showReviewForm && !editReview && (
                     <form onSubmit={handleAddReview} className='review-form'>
                         <h2>Add a Review</h2>
                         <label>
@@ -170,24 +189,22 @@ const Item = () => {
                     <div className='reviews-list'>
                         {reviews.map(review => (
                             <div key={review._id} className='review-item'>
-                            <div className='review-content'>
-                                <div><strong>Rating:</strong> {renderStars(review.rating, false)}</div>
-                                <p><strong>Comment:</strong> {review.comment}</p>
-                                <p><strong>by </strong> {review.by}</p>
+                                <div className='review-content'>
+                                    <div><strong>Rating:</strong> {renderStars(review.rating, false)}</div>
+                                    <p><strong>Comment:</strong> {review.comment}</p>
+                                    <p><strong>by: </strong> {review.by}</p>
+                                </div>
+                                {review.author === userId && (
+                                    <div className='review-actions'>
+                                        <button className='edit-button' onClick={() => setEditReview(review)}>
+                                            <FontAwesomeIcon icon={faEdit} />
+                                        </button>
+                                        <button className='delete-button' onClick={() => handleDeleteReview(review._id)}>
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                            {review.author === userId && (
-                                <div className='review-actions'>
-                                <button className='edit-button' onClick={() => setEditReview(review)}>
-                                    <FontAwesomeIcon icon={faEdit} />
-                                </button>
-                                <button className='delete-button' onClick={() => handleDeleteReview(review._id)}>
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </button>
-                            </div>
-                            
-                            )}
-                        </div>
-                        
                         ))}
                     </div>
                 ) : (

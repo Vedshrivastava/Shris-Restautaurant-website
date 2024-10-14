@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import '../styles/Login.css';
 import { assets } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
@@ -6,7 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode"; // Fixed the import
 
 const Login = ({ setShowLogin }) => {
     const { signup, isLoading, login, forgotPassword } = useAuthStore();
@@ -43,8 +43,21 @@ const Login = ({ setShowLogin }) => {
         setIsLoggedIn(false);
         localStorage.clear(); // Clear localStorage on logout
         toast.info("Session expired. Please log in again.");
-        navigate('/login');
+        setShowLogin(true);
     };
+
+    // Check if the token is expired
+    const isTokenExpired = (token) => {
+        const decodedToken = jwtDecode(token);
+        return decodedToken.exp * 1000 < Date.now(); // Check if expiration time is past
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token && isTokenExpired(token)) {
+            handleLogout(); // Log out immediately if the token is expired
+        }
+    }, []);
 
     const onLogin = async (event) => {
         event.preventDefault();
@@ -94,10 +107,14 @@ const Login = ({ setShowLogin }) => {
                     const decodedToken = jwtDecode(token);
                     const expirationTime = decodedToken.exp * 1000 - Date.now(); // Calculate time until expiration
 
-                    // Set a timeout to log the user out when the token expires
-                    setTimeout(() => {
-                        handleLogout();  // Call handleLogout function when the token expires
-                    }, expirationTime);
+                    if (expirationTime > 0) {
+                        // Set a timeout to log the user out when the token expires
+                        setTimeout(() => {
+                            handleLogout();  // Call handleLogout function when the token expires
+                        }, expirationTime);
+                    } else {
+                        handleLogout(); // Token is already expired, log the user out
+                    }
 
                     toast.success("Logged in successfully!");
                     setShowLogin(false);

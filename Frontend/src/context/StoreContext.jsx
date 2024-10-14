@@ -73,6 +73,7 @@ const StoreContextProvider = (props) => {
     }
   };
 
+
   // Fetch food list
   useEffect(() => {
     const fetchFoodList = async () => {
