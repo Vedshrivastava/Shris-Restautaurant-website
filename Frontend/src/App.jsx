@@ -27,13 +27,6 @@ const ProtectedRoute = ({ children, setShowLogin }) => {
   console.log("User:", user);
   console.log("isLoggedIn:", isLoggedIn);
 
-  // Check if the user is authenticated and verified
-  if (!isAuthenticated) {
-    console.log("User is not authenticated. Showing login dialog.");
-    setShowLogin(true); // Show the login dialog
-    return <Navigate to='/' replace />; // Redirect to the home page
-  }
-
   // Check if the user is not verified
   if (!user.isVerified) {
     console.log("User is not verified. Redirecting to verification page.");

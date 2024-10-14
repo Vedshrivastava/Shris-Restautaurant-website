@@ -7,7 +7,6 @@ axios.defaults.withCredentials = true;
 
 export const useAuthStore = create((set) => ({
     user: JSON.parse(localStorage.getItem('user')) || null,
-    isAuthenticated: localStorage.getItem('isAuthenticated') === 'true' || false,
     error: null,
     isLoading: false,
     isCheckingAuth: true,
@@ -25,7 +24,6 @@ export const useAuthStore = create((set) => ({
             
             // Save user data in localStorage
             localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('isAuthenticated', 'true');
             
             set({ user, isAuthenticated: true, isLoading: false });
             console.log("Signup response :--->> ", response.data);
@@ -76,7 +74,6 @@ export const useAuthStore = create((set) => ({
             
             // Save user data in localStorage
             localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('isAuthenticated', 'true');
             
             set({ user, isAuthenticated: true, isLoading: false });
             console.log("Email verification response :--->> ", response.data);
@@ -103,7 +100,6 @@ export const useAuthStore = create((set) => ({
     
             // Save user data in localStorage
             localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('isAuthenticated', 'true');
             
             set({ user, isAuthenticated: true, isCheckingAuth: false });
             console.log("CheckAuth response :--->> ", response.data);
@@ -157,11 +153,4 @@ export const useAuthStore = create((set) => ({
             console.log("ResetPassword isLoading: false");
         }
     },
-
-    logout: () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('isAuthenticated');
-        set({ user: null, isAuthenticated: false });
-        console.log("Logout: isAuthenticated set to false");
-    }
 }));
