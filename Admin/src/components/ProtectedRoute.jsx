@@ -35,11 +35,10 @@ const ProtectedRoute = ({ children, setShowLogin }) => {
     }, [isLoggedIn, userRole, navigate, setShowLogin]); 
 
     if (!isLoggedIn || userRole !== 'ADMIN') {
-        console.log("ProtectedRoute: User is not authorized. Rendering nothing.");
+        console.log("ProtectedRouteForManager: User is not authorized. Rendering nothing.");
         return null; 
     }
 
-    console.log("ProtectedRoute: User is authorized. Rendering children.");
     return (
         <>
             <Toaster /> {/* Using Toaster from react-hot-toast */}

@@ -61,4 +61,4 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-export { registerAdmin, loginAdmin };
+export { loginAdmin };

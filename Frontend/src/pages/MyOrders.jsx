@@ -5,6 +5,7 @@ import axios from 'axios';
 import { assets } from '../assets/frontend_assets/assets';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { color } from 'framer-motion';
 
 const MyOrders = () => {
     const [data, setData] = useState([]);
@@ -51,7 +52,8 @@ const MyOrders = () => {
                     toast.success('Order status updated', { autoClose: 1500 });
                     setTimeout(() => {
                         window.location.reload(); // Refresh the page after 3 seconds
-                    }, 1500);                }
+                    }, 1500);
+                }
             }
         } catch (error) {
             console.error("Error tracking order:", error);
@@ -88,6 +90,12 @@ const MyOrders = () => {
                         <button onClick={() => trackOrder(order._id, order.status)}>
                             Track Order
                         </button>
+                        {/* Add Call Restaurant button */}
+                        {order.restaurantPhone && ( // Check if restaurantPhone exists
+                            <a href={`tel:${order.restaurantPhone}`} className="call-button" style={{color: 'green'}}>
+                                📞 Call Restaurant
+                            </a>
+                        )}
                     </div>
                 ))}
             </div>

@@ -104,10 +104,11 @@ const Orders = ({ url }) => {
                 </div>
 
                 <p>Items: {order.items.length}</p>
-                <p>₹{order.amount}</p>
                 <p style={{ color: order.payment ? 'green' : 'red' }}>
-                  {order.payment ? 'Paid' : 'Unpaid'}
+                  ₹{order.amount}
+                  {order.payment ? ' Paid ✅' : ' Unpaid ❌'}
                 </p>
+
 
                 <select
                   onChange={(event) => statusHandler(event, order._id)}
@@ -124,7 +125,7 @@ const Orders = ({ url }) => {
           </div>
         ))}
       </div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 };

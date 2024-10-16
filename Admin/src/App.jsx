@@ -8,6 +8,7 @@ import Orders from './pages/Orders';
 import Add_Category from './pages/Add-Category';
 import List_Categories from './pages/List-Categories';
 import './index.css';
+import Blank from './pages/Blank'
 import Login from './components/Login';
 import { ProtectedRouteForManager, ProtectedRoute } from './components/ProtectedRoute'; // Import your ProtectedRoute component
 
@@ -63,6 +64,12 @@ const App = () => {
                 </ProtectedRouteForManager>
               }
             />
+            <Route 
+            path='/'
+            element={
+              <Blank/>
+            }
+            ></Route>
           </Routes>
         </div>
       </div>
