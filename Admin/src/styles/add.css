@@ -1,26 +1,38 @@
-.add{
+.add {
     font-size: 16px;
 }
 
-.add form{
-    gap: 20px;
+.add form {
+    display: flex; /* Change to flex for better alignment */
+    flex-direction: column; /* Stack items vertically */
+    gap: 20px; /* Maintain spacing between items */
 }
 
-.add-img-upload img{
+.add-img-upload img {
     width: 120px;
+    max-width: 100%; /* Make the image responsive */
+    height: auto; /* Maintain aspect ratio */
 }
 
-.add-product-name, .add-product-description{
-    width: max(40%, 280px);
+.add-product-name,
+.add-product-description {
+    width: 100%; /* Make fields take full width */
+    max-width: 280px; /* Set a max width for larger screens */
 }
 
-.add-product-name input, .add-product-description textarea{
+.add-product-name input,
+.add-product-description textarea {
     padding: 10px;
+    width: 100%; /* Ensure inputs take full width */
+    box-sizing: border-box; /* Include padding in width */
 }
 
-.add-category-price select, .add-category-price input{
+.add-category-price select,
+.add-category-price input {
     max-width: 120px;
     padding: 10px;
+    width: 100%; /* Ensure inputs take full width */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .add-btn {
@@ -30,4 +42,26 @@
     background-color: black;
     color: white;
     cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .add {
+        padding: 10px; /* Add some padding to the container */
+    }
+
+    .add form {
+        gap: 15px; /* Adjust gap for smaller screens */
+    }
+
+    .add-product-name,
+    .add-product-description,
+    .add-category-price select,
+    .add-category-price input {
+        max-width: 100%; /* Remove max width for smaller screens */
+    }
+
+    .add-btn {
+        width: 100%; /* Full width button */
+    }
 }

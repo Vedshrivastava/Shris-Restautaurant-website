@@ -9,7 +9,7 @@ import { StoreContext } from '../context/StoreContext';
 
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
-  const {token} = useContext(StoreContext);
+  const { token } = useContext(StoreContext);
 
   // Fetch all orders (whether paid or unpaid)
   const fetchAllOrders = async () => {
@@ -47,6 +47,8 @@ const Orders = ({ url }) => {
       const response = await axios.post(url + '/api/order/status', {
         orderId,
         status: event.target.value,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }, // Add the Authorization header
       });
       if (response.data.success) {
         await fetchAllOrders(); // Refresh orders after status update
@@ -92,7 +94,12 @@ const Orders = ({ url }) => {
                       {order.address.city + ' ' + order.address.state + ' ' + order.address.country + ' ' + order.address.zipcode}
                     </p>
                   </div>
-                  <p className='order-item-phone'>{order.address.phone}</p>
+                  <div className='order-item-phone'>
+                    <p>{order.address.phone}</p>
+                    <a href={`tel:${order.address.phone}`} className="call-button">
+                      📞 Call Now
+                    </a>
+                  </div>
                 </div>
 
                 <p>Items: {order.items.length}</p>

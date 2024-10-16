@@ -11,27 +11,11 @@ import './index.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Login from './components/Login';
-import ProtectedRoute from './components/ProtectedRoute'; // Import your ProtectedRoute component
-import {Navigate} from 'react-router-dom';
+import { ProtectedRouteForManager, ProtectedRoute } from './components/ProtectedRoute'; // Import your ProtectedRoute component
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
   const url = "http://localhost:4000";
-
-  const RedirectAuthenticatedUser = ({ children }) => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true' || false
-    // Logging authenticated user state
-    console.log("RedirectAuthenticatedUser Rendered");
-    console.log("isAuthenticated:", isAuthenticated);
-  
-    if (isAuthenticated) {
-      console.log("Authenticated user detected. Redirecting to home page.");
-      return <Navigate to='/' replace />;
-    }
-    
-    console.log("User is not authenticated or not verified. Rendering children.");
-    return children;
-  }
 
   return (
     <div>
@@ -77,9 +61,9 @@ const App = () => {
             <Route
               path='/orders'
               element={
-                <ProtectedRoute setShowLogin={setShowLogin}>
+                <ProtectedRouteForManager setShowLogin={setShowLogin}>
                   <Orders url={url} />
-                </ProtectedRoute>
+                </ProtectedRouteForManager>
               }
             />
           </Routes>

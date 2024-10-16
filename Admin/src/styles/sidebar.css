@@ -35,3 +35,13 @@
         display: none;
     }
 }
+
+@media (max-width: 480px) {
+    .sidebar-option p{
+        display: none;
+    }
+
+    .sidebar{
+        border: 0.8vh solid #a9a9a9 !important;
+    }
+}

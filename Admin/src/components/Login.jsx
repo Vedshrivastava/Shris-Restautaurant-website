@@ -53,10 +53,10 @@ const Login = ({ setShowLogin }) => {
             try {
                 const response = await login(data.email, data.password);
                 if (response.data.success) {
-                    if (response.data.role !== "ADMIN") {
+                    if (response.data.role !== "ADMIN" && response.data.role !== "MANAGER") {
                         toast.error("You do not have permission to log in.");
                         return; 
-                    }
+                    }                    
 
                     const token = response.data.token;
                     setToken(token);

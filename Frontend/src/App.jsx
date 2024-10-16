@@ -6,7 +6,7 @@ import Cart from './pages/Cart';
 import PlaceOrder from './pages/PlaceOrder';
 import Footer from './components/Footer';
 import Login from './components/Login';
-import { ToastContainer } from 'react-toastify'; 
+import { ToastContainer, toast } from 'react-toastify'; 
 import Verify from './pages/Verify';
 import MyOrders from './pages/MyOrders';
 import Item from './pages/Item';
@@ -19,24 +19,24 @@ import { StoreContext } from './context/StoreContext';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuthStore();
-  const { isLoggedIn } = useContext(StoreContext); 
-  
-  console.log("ProtectedRoute Rendered");
-  console.log("User:", user);
-  console.log("isLoggedIn:", isLoggedIn);
+  const { isLoggedIn } = useContext(StoreContext);
+  const [redirectPath, setRedirectPath] = useState(null); // State to handle redirect path
 
-  if (!user.isVerified) {
-    console.log("User is not verified. Redirecting to verification page.");
-    return <Navigate to='/verify-email' replace />; 
+  useEffect(() => {
+    if (!user.isVerified) {
+      toast.error("Email is not verified");
+      setRedirectPath('/verify-email'); // Set the redirect path after showing toast
+    } else if (!isLoggedIn) {
+      toast.error("User not logged in");
+      setRedirectPath('/'); // Set the redirect path after showing toast
+    }
+  }, [user, isLoggedIn]); // Only runs when `user` or `isLoggedIn` changes
+
+  if (redirectPath) {
+    return <Navigate to={redirectPath} replace />;
   }
 
-  if (!isLoggedIn) {
-    console.log("User is not logged in. Redirecting to home page.");
-    return <Navigate to='/' replace />;
-  }
-
-  console.log("User is authenticated and verified. Rendering children.");
-  return children; 
+  return children; // Render the protected content if no redirect is needed
 };
 
 const RedirectAuthenticatedUser = ({ children }) => {

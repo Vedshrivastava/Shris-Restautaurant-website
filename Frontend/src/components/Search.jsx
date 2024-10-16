@@ -33,29 +33,22 @@ const Search = ({ setShowSearch }) => {
 
     useEffect(() => {
         const lowercasedInput = searchInput.toLowerCase().replace(/\s+/g, '');
-        const filtered = food_list.filter((item) => 
-            item.name.toLowerCase().replace(/\s+/g, '').includes(lowercasedInput) || 
+        const filtered = food_list.filter((item) =>
+            item.name.toLowerCase().replace(/\s+/g, '').includes(lowercasedInput) ||
             item.category.toLowerCase().includes(lowercasedInput)
         );
         setFilteredFood(filtered);
     }, [searchInput, food_list]);
-
-    // Handle click on food item
-    const handleFoodItemClick = (item) => {
-        // Handle the item click logic here, like navigating or showing item details
-        console.log("Item clicked:", item);
-        setShowSearch(false); // Close search when item is clicked
-    };
 
     return (
         <div className='search'>
             <div className='search-container'>
                 <div className="search-title">
                     <h2>Search Food</h2>
-                    <img 
-                        onClick={clearSearch} 
-                        src={assets.cross_icon} 
-                        alt='Clear' 
+                    <img
+                        onClick={clearSearch}
+                        src={assets.cross_icon}
+                        alt='Clear'
                         className='clear-icon'
                     />
                 </div>
@@ -72,13 +65,14 @@ const Search = ({ setShowSearch }) => {
                     {filteredFood.length > 0 ? (
                         <div className='food-list'>
                             {filteredFood.map((item) => (
-                                    <FoodItem 
-                                        id={item._id}
-                                        name={item.name}
-                                        description={item.description}
-                                        price={item.price}
-                                        image={item.image}
-                                    />
+                                <FoodItem
+                                    key={item._id} // Add the key prop here
+                                    id={item._id}
+                                    name={item.name}
+                                    description={item.description}
+                                    price={item.price}
+                                    image={item.image}
+                                />
                             ))}
                         </div>
                     ) : (

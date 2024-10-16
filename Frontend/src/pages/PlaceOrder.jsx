@@ -151,10 +151,9 @@ const PlaceOrder = () => {
   useEffect(() => {
     console.log("Checking user token and cart amount...");
     if (!token) {
-      navigate("/cart");
-      toast.error("User Not SignedIn");
+      navigate("/");
     } else if (getTotalCartAmount() === 0) {
-      navigate("/cart");
+      navigate("/");
       toast.error("Cart Is Empty");
     }
   }, [token]);

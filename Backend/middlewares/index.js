@@ -6,7 +6,7 @@ const signTokenForConsumer = async (user) => {
     return null;
   }
 
-  console.log("userID: ---", user.id)
+  console.log("userID: ---", user.id);
 
   return JWT.sign(
     {
@@ -20,8 +20,6 @@ const signTokenForConsumer = async (user) => {
     }
   );
 };
-
-
 
 const signTokenForAdmin = async (user) => {
   return JWT.sign(
@@ -37,5 +35,19 @@ const signTokenForAdmin = async (user) => {
   );
 };
 
-export { signTokenForConsumer, signTokenForAdmin };
+// New function for signing token for MANAGER
+const signTokenForManager = async (user) => {
+  return JWT.sign(
+    {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    },
+    process.env.JWT_KEY_MANAGER, // Make sure this environment variable is set
+    {
+      expiresIn: "1d",
+    }
+  );
+};
 
+export { signTokenForConsumer, signTokenForAdmin, signTokenForManager };

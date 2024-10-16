@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
     verificationTokenExpiresAt: Date,
     role: {
       type: String,
-      enum: ["ADMIN", "USER"],
+      enum: ["ADMIN", "USER", "MANAGER"],
       default: "USER",
       required: true,
     },
