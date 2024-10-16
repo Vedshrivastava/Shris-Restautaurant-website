@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/add.css';
 import { assets } from '../assets/admin_assets/assets';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, Toaster } from 'react-hot-toast';
 import '../index.css';
 import { useContext } from 'react';
 import { StoreContext } from '../context/StoreContext';
@@ -111,6 +111,7 @@ const Add = ({ url }) => {
                 </div>
                 <button type='submit' className='add-btn'>Add</button>
             </form>
+            <Toaster/>
         </div>
     );
 };

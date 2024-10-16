@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/list-categories.css'; // Ensure this is the updated CSS file
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, Toaster } from 'react-hot-toast';
 import '../index.css';
 import { useContext } from 'react';
 import { StoreContext } from '../context/StoreContext';
@@ -61,6 +61,7 @@ const ListCategory = ({ url }) => {
                     </div>
                 ))}
             </div>
+            <Toaster/>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/orders.css';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, Toaster } from 'react-hot-toast';
 import { assets } from '../assets/admin_assets/assets';
 import moment from 'moment'; // Import moment.js for date formatting
 import { useContext } from 'react';
@@ -52,6 +52,7 @@ const Orders = ({ url }) => {
       });
       if (response.data.success) {
         await fetchAllOrders(); // Refresh orders after status update
+        toast.success("Order status updated successfully")
       }
     } catch (error) {
       toast.error('Failed to update order status');
@@ -123,6 +124,7 @@ const Orders = ({ url }) => {
           </div>
         ))}
       </div>
+      <Toaster/>
     </div>
   );
 };

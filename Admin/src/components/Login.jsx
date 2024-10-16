@@ -1,36 +1,26 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import '../styles/Login.css';
 import { assets_frontend } from '../assets/frontend_assets/assets';
 import { StoreContext } from '../context/StoreContext';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Toaster, toast } from 'react-hot-toast'; // Adjusted import
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore.js';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 
 const Login = ({ setShowLogin }) => {
     const { isLoading, login, forgotPassword } = useAuthStore();
     const { setToken, setUserId, setUserName, setUserEmail, setIsLoggedIn } = useContext(StoreContext);
 
     const [currState, setCurrState] = useState("Login");
-    const [data, setData] = useState({ email: "", password: "" });
+    const [data, setData] = useState({
+        email: "",
+        password: ""
+    });
     const [forgotEmail, setForgotEmail] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [resetMessage, setResetMessage] = useState(""); 
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Check for token validity on component mount
-        const token = localStorage.getItem("token");
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            const isExpired = decodedToken.exp * 1000 < Date.now();
-            if (isExpired) {
-                handleLogout();
-            }
-        }
-    }, []);
 
     const onChangeHandler = (event) => {
         const name = event.target.name;
@@ -46,36 +36,54 @@ const Login = ({ setShowLogin }) => {
         event.preventDefault();
 
         if (currState === "Forgot Password") {
-            // Forgot Password Logic
-            // ...
+            try {
+                const response = await forgotPassword(forgotEmail);
+                if (response.data.success) {
+                    toast.success("Password reset link sent to your email.");
+                    setIsSubmitted(true);
+                    setResetMessage("A password reset link has been sent to your email.");
+                } else {
+                    toast.error(response.data.message || "Failed to send password reset link");
+                }
+            } catch (error) {
+                toast.error("Error sending password reset link");
+                console.error(error);
+            }
         } else {
-            // Login Logic
             try {
                 const response = await login(data.email, data.password);
                 if (response.data.success) {
+                    // Check if the user is an admin
                     if (response.data.role !== "ADMIN" && response.data.role !== "MANAGER") {
                         toast.error("You do not have permission to log in.");
                         return; 
-                    }                    
-
+                    }           
+                    // Proceed with the login process if the user is an admin
                     const token = response.data.token;
                     setToken(token);
                     localStorage.setItem("token", token);
 
-                    const decodedToken = jwtDecode(token);
+                    // Decode the token to get user info
+                    const decodedToken = jwtDecode(token); 
+                    console.log("Decoded Token:", decodedToken);
+
                     localStorage.setItem("userId", decodedToken.id);
                     localStorage.setItem("userName", decodedToken.name);
                     localStorage.setItem("userEmail", decodedToken.email);
 
+                    // Set user information in context
                     setUserId(decodedToken.id);
                     setUserName(decodedToken.name);
                     setUserEmail(decodedToken.email);
                     setIsLoggedIn(true);
 
                     toast.success("Logged in successfully!");
-                    setShowLogin(false);
-                    navigate('/');
+                    setTimeout(() => {
+                        setShowLogin(false);
+                        navigate('/');
+                    }, 2000); // Delay of 2000 milliseconds (2 seconds)
 
+                    // Set logout timer
                     const expirationTime = decodedToken.exp * 1000;
                     const logoutTime = expirationTime - Date.now();
 
@@ -88,7 +96,7 @@ const Login = ({ setShowLogin }) => {
                     toast.error(response.data.message || "Login failed");
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 toast.error('Something went wrong during login');
             }
         }
@@ -101,8 +109,7 @@ const Login = ({ setShowLogin }) => {
         localStorage.removeItem("userName");
         localStorage.removeItem("userEmail");
         setIsLoggedIn(false);
-        toast.info("You have been logged out due to inactivity.");
-        navigate('/login');
+        toast.info("You have been logged out.");
     };
 
     return (
@@ -147,7 +154,9 @@ const Login = ({ setShowLogin }) => {
                     {currState === 'Forgot Password' ? "Send Reset Link" : "Login"}
                 </button>
                 {currState === 'Login' && (
-                    <p>Forgot your password? <span onClick={() => setCurrState("Forgot Password")}>Reset</span></p>
+                    <>
+                        <p>Forgot your password? <span onClick={() => setCurrState("Forgot Password")}>Reset</span></p>
+                    </>
                 )}
                 {currState === 'Forgot Password' && (
                     <p>Remembered your password? <span onClick={() => setCurrState("Login")}>Login</span></p>
@@ -158,7 +167,7 @@ const Login = ({ setShowLogin }) => {
                     </div>
                 )}
             </form>
-            <ToastContainer />
+            <Toaster />
         </div>
     );
 };

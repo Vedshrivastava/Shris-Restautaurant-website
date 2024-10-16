@@ -8,8 +8,6 @@ import Orders from './pages/Orders';
 import Add_Category from './pages/Add-Category';
 import List_Categories from './pages/List-Categories';
 import './index.css';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
 import Login from './components/Login';
 import { ProtectedRouteForManager, ProtectedRoute } from './components/ProtectedRoute'; // Import your ProtectedRoute component
 
@@ -20,7 +18,6 @@ const App = () => {
   return (
     <div>
       {showLogin && <Login setShowLogin={setShowLogin} />}
-      <ToastContainer />
       <Navbar setShowLogin={setShowLogin} />
       <div className="app-contents">
         <Sidebar />

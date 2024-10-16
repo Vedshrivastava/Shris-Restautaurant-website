@@ -2,7 +2,7 @@ import React from 'react'
 import '../styles/list.css'
 import { useState } from 'react'
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import '../index.css'
 import { useContext } from 'react';
@@ -33,6 +33,7 @@ const List = ({url}) => {
         });
         if (response.data.success) {
             await fetchList();
+            toast.success("Food successfully removed")
         } else {
             toast.error(response.data.message || "Failed to remove food");
         }
@@ -68,6 +69,7 @@ const List = ({url}) => {
           )
         })}
       </div>
+      <Toaster/>
     </div>
   )
 }

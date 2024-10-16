@@ -1,79 +1,94 @@
 import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore'; // Adjust path as necessary
+import { useAuthStore } from '../store/authStore'; 
 import { StoreContext } from '../context/StoreContext';
-import { toast } from 'react-toastify'; // Import toast
+import { Toaster, toast } from 'react-hot-toast'; // Adjusted import
 
 const ProtectedRoute = ({ children, setShowLogin }) => {
-    const { user } = useAuthStore(); // Assuming your auth store has these properties
+    const { user } = useAuthStore(); 
     const { isLoggedIn } = useContext(StoreContext);
     const navigate = useNavigate();
-    const userRole = user?.role; // Use optional chaining to avoid errors if user is undefined
+    const userRole = user?.role; 
 
     useEffect(() => {
         console.log("ProtectedRoute: Checking authentication status...");
         console.log("Is Logged In:", isLoggedIn);
         console.log("User Role:", userRole);
 
-        // Check if the user is not logged in
         if (!isLoggedIn) {
             console.log("ProtectedRoute: User is not logged in. Showing login modal and navigating to home.");
-            setShowLogin(true); // Show the login modal
-            navigate('/'); // Navigate to the home page
+            setShowLogin(true); 
+            toast.error("Please login first"); 
+            navigate('/');
+            return;
         } else if (userRole === 'MANAGER') {
-            // If the user is a MANAGER, navigate to the orders page and show a toast message
             console.log("ProtectedRoute: User is a MANAGER. Not authorized. Navigating to orders.");
             toast.error("Not authorized");
-            navigate('/orders'); // Navigate to the orders page
-        } else if (userRole !== 'ADMIN') {
-            console.log("ProtectedRoute: User is not authorized. Showing login modal and navigating to home.");
-            setShowLogin(true); // Show the login modal
-            navigate('/'); // Navigate to the home page
+            navigate('/orders');
+            return;
         } else {
-            console.log("ProtectedRoute: User is authorized.");
+            console.log("ProtectedRoute: User is not authorized. Showing login modal and navigating to home.");
+            toast.error("Not Authorized")
+                navigate('/');
+            return;
         }
-    }, [isLoggedIn, userRole, navigate, setShowLogin]); // Add dependencies
+    }, [isLoggedIn, userRole, navigate, setShowLogin]); 
 
-    // Prevent rendering the child components if unauthorized
     if (!isLoggedIn || userRole !== 'ADMIN') {
         console.log("ProtectedRoute: User is not authorized. Rendering nothing.");
-        return null; // Render nothing while navigating
+        return null; 
     }
 
     console.log("ProtectedRoute: User is authorized. Rendering children.");
-    return children; // Render the child components if authorized
+    return (
+        <>
+            <Toaster /> {/* Using Toaster from react-hot-toast */}
+            {children}
+        </>
+    );
 };
 
 const ProtectedRouteForManager = ({ children, setShowLogin }) => {
-    const { user } = useAuthStore(); // Get user details from auth store
-    const { isLoggedIn } = useContext(StoreContext); // Assuming your auth store has this property
+    const { user } = useAuthStore(); 
+    const { isLoggedIn } = useContext(StoreContext); 
     const navigate = useNavigate();
-    const userRole = user?.role; // Use optional chaining to avoid errors if user is undefined
+    const userRole = user?.role; 
 
     useEffect(() => {
         console.log("ProtectedRouteForManager: Checking authentication status...");
         console.log("Is Logged In:", isLoggedIn);
         console.log("User Role:", userRole);
 
-        // Check if the user is not logged in or does not have manager or admin role
-        if (!isLoggedIn || (userRole !== 'MANAGER' && userRole !== 'ADMIN')) {
+        if (!isLoggedIn) {
             console.log("ProtectedRouteForManager: User is not authorized. Showing login modal and navigating to home.");
-            toast.error("Not authorized"); // Show toast message for unauthorized access
-            setShowLogin(true); // Show the login modal
-            navigate('/'); // Navigate to the home page
-        } else {
+            toast.error("Please login first"); 
+                setShowLogin(true)
+                navigate('/');
+                return;
+        } 
+        else if (userRole !== 'MANAGER' && userRole !== 'ADMIN') {
+            console.log("ProtectedRouteForManager: User is not authorized. Showing login modal and navigating to home.");
+            toast.error("Not authorized"); 
+                setShowLogin(true);
+                navigate('/');
+        } 
+        else {
             console.log("ProtectedRouteForManager: User is authorized.");
         }
-    }, [isLoggedIn, userRole, navigate, setShowLogin]); // Add dependencies
+    }, [isLoggedIn, userRole, navigate, setShowLogin]); 
 
-    // Prevent rendering the child components if unauthorized
     if (!isLoggedIn || (userRole !== 'MANAGER' && userRole !== 'ADMIN')) {
         console.log("ProtectedRouteForManager: User is not authorized. Rendering nothing.");
-        return null; // Render nothing while navigating
+        return null; 
     }
 
     console.log("ProtectedRouteForManager: User is authorized. Rendering children.");
-    return children; // Render the child components if authorized
+    return (
+        <>
+            <Toaster /> {/* Using Toaster from react-hot-toast */}
+            {children}
+        </>
+    );
 };
 
 export { ProtectedRoute, ProtectedRouteForManager };

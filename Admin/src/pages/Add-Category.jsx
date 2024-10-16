@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, Toaster } from 'react-hot-toast';
 import '../index.css';
 import '../styles/add-category.css';
 import { assets } from '../assets/admin_assets/assets.js';
@@ -74,6 +74,7 @@ const AddCategory = ({ url, onCategoryAdded }) => {
                 </div>
                 <button type="submit">Add Category</button>
             </form>
+            <Toaster/>
         </div>
     );
 };
