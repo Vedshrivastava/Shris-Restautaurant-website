@@ -11,29 +11,6 @@ export const useAuthStore = create((set) => ({
     isLoading: false,
     isCheckingAuth: true,
 
-    signup: async (email, password, name) => {
-        set({
-            isLoading: true,
-            error: null
-        });
-        try {
-            const response = await axios.post(`http://localhost:4000/api/admin/register`, { email, password, name });
-            const { user } = response.data;
-            
-            // Save user data in localStorage
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('isAuthenticated', 'true');
-            
-            set({ user, isAuthenticated: true, isLoading: false });
-            console.log("Signup response :--->> ", response.data);
-
-            return response;  // Return response data
-        } catch (error) {
-            set({ error: error.response.data.message || "Error signing up", isLoading: false });
-            throw error;
-        }
-    },
-
     login: async (email, password) => {
         set({ isLoading: true, error: null });
         try {
@@ -57,7 +34,7 @@ export const useAuthStore = create((set) => ({
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`http://localhost:4000/api/user/verify-email`, { code });
+            const response = await axios.post(`http://localhost:4000/api/admin/verify-email`, { code });
             const { user } = response.data;
             
             // Save user data in localStorage
@@ -78,7 +55,7 @@ export const useAuthStore = create((set) => ({
         set({ isCheckingAuth: true, error: null });
         try {
             const { token } = useContext(StoreContext);
-            const response = await axios.get(`http://localhost:4000/api/user/check-auth`, { 
+            const response = await axios.get(`http://localhost:4000/api/admin/check-auth`, { 
                 headers: { Authorization: `Bearer ${token}` } 
             });
             const { user } = response.data;
@@ -105,7 +82,7 @@ export const useAuthStore = create((set) => ({
     forgotPassword: async (email) => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axios.post(`http://localhost:4000/api/user/forgot-password`, { email });
+			const response = await axios.post(`http://localhost:4000/api/admin/forgot-password`, { email });
 			set({ message: response.data.message, isLoading: false });
             return response;
 		} catch (error) {
@@ -120,7 +97,7 @@ export const useAuthStore = create((set) => ({
 	resetPassword: async (token, password) => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axios.post(`http://localhost:4000/api/user/reset-password/${token}`, { password });
+			const response = await axios.post(`http://localhost:4000/api/admin/reset-password/${token}`, { password });
 			set({ message: response.data.message, isLoading: false });
             return response
 		} catch (error) {
@@ -131,12 +108,4 @@ export const useAuthStore = create((set) => ({
 			throw error;
 		}
 	},
-    
-
-    logout: () => {
-        // Clear the local storage and reset the state
-        localStorage.removeItem('user');
-        localStorage.removeItem('isAuthenticated');
-        set({ user: null, isAuthenticated: false });
-    }
 }));
