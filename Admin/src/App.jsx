@@ -43,9 +43,9 @@ const App = () => {
             <Route
               path='/list'
               element={
-                <ProtectedRoute setShowLogin={setShowLogin}>
+                <ProtectedRouteForManager setShowLogin={setShowLogin}>
                   <List url={url} />
-                </ProtectedRoute>
+                </ProtectedRouteForManager>
               }
             />
             <Route

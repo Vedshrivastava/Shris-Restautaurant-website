@@ -14,7 +14,7 @@ const List = ({url}) => {
   const {token} = useContext(StoreContext);
 
   const fetchList = async () => {
-    const response = await axios.get(`${url}/api/food/admin-list`, {
+    const response = await axios.get(`${url}/api/food/list`, {
         headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -38,7 +38,8 @@ const List = ({url}) => {
             toast.error(response.data.message || "Failed to remove food");
         }
     } catch (error) {
-        toast.error("An error occurred while removing the food");
+        toast.error("You are not Authorized.");
+        console.log(error);
     }
 }
 

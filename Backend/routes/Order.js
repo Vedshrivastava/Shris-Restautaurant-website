@@ -6,11 +6,11 @@ const order = express.Router()
 
 order.post('/user-orders', authMiddleware, userOrders)
 
-order.get('/list', [managerAuthMiddleware], listOrders)
+order.get('/list', managerAuthMiddleware, listOrders)
 
 order.post('/order', phonepeOrder)
 
-order.post('/status', adminAuthMiddleware, updateStatus)
+order.post('/status', managerAuthMiddleware, updateStatus)
 
 order.post('/cod', codOrder)
 

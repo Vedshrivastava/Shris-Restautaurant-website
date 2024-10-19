@@ -1,6 +1,6 @@
 import userModel from "../models/user.js";
 import bcrypt from "bcrypt";
-import { signTokenForAdmin } from "../middlewares/index.js";
+import { signTokenForAdmin, signTokenForManager } from "../middlewares/index.js";
 
 const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
@@ -10,10 +10,10 @@ const loginAdmin = async (req, res) => {
 
     if (!admin || (admin.role !== "ADMIN" && admin.role !== "MANAGER")) {
       return res.status(400).json({
-          success: false,
-          message: "Admin does not exist with provided email",
+        success: false,
+        message: "Admin or manager does not exist with the provided email",
       });
-  }  
+    }
 
     const isMatch = await bcrypt.compare(password, admin.password);
 
@@ -30,7 +30,13 @@ const loginAdmin = async (req, res) => {
       email: admin.email,
     };
 
-    const token = await signTokenForAdmin(tokenData);
+    // Sign token based on role
+    let token;
+    if (admin.role === "ADMIN") {
+      token = await signTokenForAdmin(tokenData);
+    } else if (admin.role === "MANAGER") {
+      token = await signTokenForManager(tokenData);
+    }
 
     if (token) {
       return res.status(200).json({
@@ -60,5 +66,6 @@ const loginAdmin = async (req, res) => {
     });
   }
 };
+
 
 export { loginAdmin };

@@ -1,5 +1,8 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { toast, Toaster } from "react-hot-toast";
+
+
 
 export const StoreContext = createContext(null);
 
@@ -26,19 +29,42 @@ const StoreContextProvider = (props) => {
   const [currentItemId, setCurrentItemId] = useState(null);
   const [currentQuantity, setCurrentQuantity] = useState(null);
 
+  const logout = () => {
+    setToken(null); 
+    setUserId(null); 
+    setUserEmail(null);
+    setUserName(null);
+    setCartItems({});
+    localStorage.removeItem("cartItems")
+    localStorage.removeItem("userEmail")
+    localStorage.removeItem("userName")
+    localStorage.removeItem("token"); 
+    localStorage.removeItem("userId"); 
+};
+
   const addToCartOnServer = async (itemId) => {
     if (token) {
       try {
-        await axios.post(
+        const response = await axios.post(
           `${url}/api/cart/add`,
           { itemId },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+  
+        if (response.status === 200 || response.status === 201) {
+          return true;
+        }
       } catch (error) {
+        if (error.response) {
+          toast.error(`Failed to add item`);
+          logout();
+        } else {
+          toast.error("Network error, please try again later.");
+        }
         console.error("Error adding item to cart:", error);
       }
     } else {
-      console.log("No token for cart");
+      toast.warning("Please log in to add items to your cart.");
     }
   };
 
@@ -107,7 +133,7 @@ const StoreContextProvider = (props) => {
           throw new Error(`Error: Received status code ${response.status}`);
         }
       } catch (error) {
-        console.error("Error loading cart data:", error.message);
+        console.log("Error loading cart data:", error);
         if (error.response && error.response.status === 401) {
           alert("Your session has expired. Please log in again.");
         }
@@ -158,19 +184,26 @@ const StoreContextProvider = (props) => {
     }
   }, [operationType, currentItemId]);
 
-  const addToCart = (itemId) => {
-    setCartItems((prev) => {
-      const newCartItems = { ...prev };
-      if (!newCartItems[itemId]) {
-        newCartItems[itemId] = 1;
-      } else {
-        newCartItems[itemId] += 1;
-      }
-      localStorage.setItem("cartItems", JSON.stringify(newCartItems));
-      setOperationType('add');
-      setCurrentItemId(itemId);
-      return newCartItems;
-    });
+  const addToCart = async (itemId) => {
+    const success = await addToCartOnServer(itemId);
+    
+    if (success) {
+      setCartItems((prev) => {
+        const newCartItems = { ...prev };
+        if (!newCartItems[itemId]) {
+          newCartItems[itemId] = 1;
+        } else {
+          newCartItems[itemId] += 1;
+        }
+        localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+        setOperationType('add');
+        setCurrentItemId(itemId);
+        return newCartItems;
+      });
+    } else {
+      toast.error("Please Login again.");
+      console.log(success);
+    }
   };
 
   const handleIncrement = (id) => {
@@ -264,6 +297,7 @@ const StoreContextProvider = (props) => {
   return (
     <StoreContext.Provider value={contextValue}>
       {props.children}
+      <Toaster/>
     </StoreContext.Provider>
   );
 };

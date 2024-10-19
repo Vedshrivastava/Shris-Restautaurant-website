@@ -10,7 +10,7 @@ const signTokenForConsumer = async (user) => {
 
   return JWT.sign(
     {
-      id: user.id.toString(),
+      id: user.id,
       name: user.name,
       email: user.email,
     },

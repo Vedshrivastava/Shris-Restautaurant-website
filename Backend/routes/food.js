@@ -18,8 +18,6 @@ const upload = multer({storage:storage})
 
 food.post('/add',adminAuthMiddleware ,upload.single("image"), addFood);
 
-food.get('/admin-list', adminAuthMiddleware, listFood)
-
 food.get('/list', listFood);
 
 food.delete('/remove', adminAuthMiddleware, removeFood)

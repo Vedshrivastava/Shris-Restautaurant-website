@@ -6,7 +6,7 @@ import Cart from './pages/Cart';
 import PlaceOrder from './pages/PlaceOrder';
 import Footer from './components/Footer';
 import Login from './components/Login';
-import { ToastContainer, toast } from 'react-toastify'; 
+import { Toaster, toast } from 'react-hot-toast'; 
 import Verify from './pages/Verify';
 import MyOrders from './pages/MyOrders';
 import Item from './pages/Item';
@@ -16,6 +16,8 @@ import ResetPassword from './pages/ResetPassword';
 import Search from './components/Search';
 import { useAuthStore } from './store/authStore';
 import { StoreContext } from './context/StoreContext';
+
+
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuthStore();
@@ -93,7 +95,7 @@ const App = () => {
 
       </div>
       <Footer />
-      <ToastContainer />
+      <Toaster />
     </>
   );
 };
