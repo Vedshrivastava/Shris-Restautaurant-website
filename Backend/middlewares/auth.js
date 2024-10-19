@@ -18,9 +18,11 @@ const authMiddleware = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_KEY_CONSUMER);
         console.log("Decoded token payload:", decoded);  
 
+        req.userId = decoded.id;  
         req.userName = decoded.name;  
         req.userEmail = decoded.email;  
 
+        console.log("User ID from token:", req.userId);  
         next();  
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
@@ -49,9 +51,11 @@ const adminAuthMiddleware = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_KEY_ADMIN);
         console.log("Decoded admin token payload:", decoded);  
 
+        req.userId = decoded._id;  
         req.userName = decoded.name;  
         req.userEmail = decoded.email;  
 
+        console.log("Admin User ID from token:", req.userId);  
         next();  
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
@@ -81,9 +85,11 @@ const managerAuthMiddleware = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_KEY_MANAGER);
         console.log("Decoded manager token payload:", decoded);  
 
+        req.userId = decoded.id;  
         req.userName = decoded.name;  
         req.userEmail = decoded.email;  
 
+        console.log("Manager User ID from token:", req.userId);  
         next();  
     } catch (error) {
         console.log('Manager token verification error:', error);
@@ -93,8 +99,11 @@ const managerAuthMiddleware = async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_KEY_ADMIN);
             console.log("Decoded admin token payload:", decoded);  
 
+            req.userId = decoded._id;  
             req.userName = decoded.name;  
             req.userEmail = decoded.email;  
+
+            console.log("Admin User ID from token:", req.userId);  
             next();  
         } catch (adminError) {
             if (adminError.name === 'TokenExpiredError') {

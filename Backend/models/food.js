@@ -12,6 +12,7 @@ const foodSchema = new mongoose.Schema({
             ref: "Review"
         },
     ],
+    inStock: { type: Boolean, default: true } 
 });
 
 const food = mongoose.models.food || mongoose.model("food", foodSchema);

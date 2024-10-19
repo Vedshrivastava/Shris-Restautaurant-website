@@ -11,12 +11,11 @@ const truncateDescription = (description, maxWords) => {
     return words.slice(0, maxWords).join(' ') + '...';
 };
 
-const FoodItem = ({ id, name, price, description, image }) => {
+const FoodItem = ({ id, name, price, description, image, inStock }) => {
     const [averageRating, setAverageRating] = useState(0);
     const { cartItems = {}, addToCart, handleDecrement, handleIncrement } = useContext(StoreContext);
     const navigate = useNavigate();
     const { url } = useContext(StoreContext); 
-
 
     const handleClick = () => {
         navigate(`/item/${id}`, {
@@ -28,7 +27,7 @@ const FoodItem = ({ id, name, price, description, image }) => {
                 image,
             },
         });
-    }
+    };
 
     const itemQuantity = cartItems[id] || 0;
 
@@ -75,13 +74,17 @@ const FoodItem = ({ id, name, price, description, image }) => {
             <div className="food-item-img-container">
                 <img onClick={handleClick} className='food-item-image' src={image} alt={name} />
                 {
-                    itemQuantity === 0 ?
+                    !inStock ? (
+                        <div className="out-of-stock-message">Out of Stock</div>
+                    ) : itemQuantity === 0 ? (
                         <img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} />
-                        : <div className='food-item-counter'>
+                    ) : (
+                        <div className='food-item-counter'>
                             <img onClick={() => handleDecrement(id)} src={assets.remove_icon_red} />
                             <p>{itemQuantity}</p>
                             <img onClick={() => handleIncrement(id)} src={assets.add_icon_green} />
                         </div>
+                    )
                 }
             </div>
             <div onClick={handleClick} className='food-item-info'>

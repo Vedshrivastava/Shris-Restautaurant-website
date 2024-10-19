@@ -57,6 +57,7 @@ const StoreContextProvider = (props) => {
       } catch (error) {
         if (error.response) {
           toast.error(`Failed to add item`);
+          console.log(error)
           logout();
         } else {
           toast.error("Network error, please try again later.");

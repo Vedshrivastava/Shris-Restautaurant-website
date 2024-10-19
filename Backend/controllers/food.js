@@ -66,6 +66,43 @@ const removeFood = async (req, res) => {
     }
 };
 
+const updateStock = async (req, res) => {
+    try {
+        console.log("Request Body:", req.body); // Log the incoming request body
+        const { _id, stock } = req.body; // Extract stock from request body
+        console.log({ _id, stock }); // Log the values being sent
+
+        // Validate the input
+        if (!(_id && typeof stock === 'boolean')) {
+            return res.status(400).json({ success: false, message: "Invalid input" });
+        }
+
+        // Update the inStock field
+        const updatedFood = await Food.findByIdAndUpdate(
+            _id, 
+            { inStock: stock }, // Correct field name in update
+            { new: true } // Return the updated document
+        );
+
+        console.log("Updated Food:", updatedFood); // Log the updated food document
+
+        // Check if the food item exists
+        if (!updatedFood) {
+            return res.status(404).json({ success: false, message: "Food item not found" });
+        }
+
+        res.json({ success: true, message: "Stock Updated Successfully" });
+    } catch (error) {
+        console.error("Error updating stock:", error); // Log the error
+        res.status(500).json({ success: false, message: "Error updating stock" });
+    }
+};
+
+
+export default updateStock;
+
+
+
 const getReviewList = async (req, res) => {
     const { id } = req.params;
 
@@ -112,4 +149,4 @@ const searchFood = async (req, res) => {
 };
 
 
-export { addFood, listFood, removeFood, getReviewList, searchFood };
+export { addFood, listFood, removeFood, getReviewList, searchFood, updateStock };

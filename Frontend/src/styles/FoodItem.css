@@ -87,6 +87,12 @@
     width: 30px;
 }
 
+.out-of-stock-message{
+    color: tomato;
+    font-weight: 550;
+    margin-left: 7px;
+}
+
 @media (max-width: 480px) {
     .food-item {
         flex-direction: row; /* Side by side layout */

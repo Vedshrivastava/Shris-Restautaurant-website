@@ -1,5 +1,5 @@
 import express from 'express'
-import { addFood, getReviewList, listFood, removeFood } from '../controllers/food.js';
+import { addFood, getReviewList, listFood, removeFood, updateStock } from '../controllers/food.js';
 import multer from 'multer'
 import { adminAuthMiddleware } from '../middlewares/auth.js';
 
@@ -24,6 +24,6 @@ food.delete('/remove', adminAuthMiddleware, removeFood)
 
 food.get('/reviews/:id', getReviewList)
 
-
+food.post('/stock', updateStock)
 
 export default food;
