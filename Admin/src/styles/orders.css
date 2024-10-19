@@ -1,6 +1,6 @@
 .order-item {
     display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr 1fr; /* Original layout */
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr; /* Original layout */
     align-items: start;
     gap: 30px;
     border: 1px solid tomato;
