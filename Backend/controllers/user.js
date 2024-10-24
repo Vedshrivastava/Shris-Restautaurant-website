@@ -2,7 +2,7 @@ import userModel from "../models/user.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import crypto from 'crypto';
-import { sendVerificationEmail, sendWelcomeEmail, sendResetSuccessEmail, sendPasswordResetEmail, sendVerificationSMS } from "../middlewares/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail, sendResetSuccessEmail, sendPasswordResetEmail, sendVerificationSMS, sendPasswordResetSMS } from "../middlewares/emails.js";
 import {
   signTokenForConsumer,
 } from "../middlewares/index.js";
@@ -347,35 +347,60 @@ const registerUser = async (req, res) => {
 };
 
 
-  const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-    try {
-      const user = await userModel.findOne({ email });
+const forgotPassword = async (req, res) => {
+  const { contact } = req.body; // Only one field: contact
+  console.log("Request Body:", req.body);
 
+  try {
+    let user;
+
+    // Check if contact is an email
+    if (contact.includes('@')) {
+      user = await userModel.findOne({ email: contact });
       if (!user) {
-        return res.status(400).json({ success: false, message: "Invalid request" });
+        return res.status(400).json({ success: false, message: "No user found with this email." });
       }
-
-      const resetToken = crypto.randomBytes(20).toString('hex');
-      console.log("Reset Token : ", resetToken);
-      const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
-
-      user.resetPasswordToken = resetToken;
-      user.resetPasswordTokenExpiresAt = resetTokenExpiresAt;
-
-      await user.save();
-
-      await sendPasswordResetEmail(user.email, `http://localhost:5173/reset-password/${resetToken}`);
-
-      return res.status(200).json({ success: true, message: "Password reset email sent" });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Some Internal Error Occurred",
-      });
+    } 
+    // Otherwise, assume it's a phone number
+    else {
+      user = await userModel.findOne({ phone: contact });
+      if (!user) {
+        return res.status(400).json({ success: false, message: "No user found with this phone number." });
+      }
     }
-  };
+
+    // Check if the user is verified
+    if (!user.isVerified) {
+      return res.status(400).json({ success: false, message: "User is not verified." });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    console.log("Reset Token:", resetToken);
+    const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour expiration
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordTokenExpiresAt = resetTokenExpiresAt;
+
+    await user.save();
+
+    // Send password reset email or SMS based on user type
+    if (user.email === contact) {
+      await sendPasswordResetEmail(user.email, `http://localhost:5173/reset-password/${resetToken}`);
+    } else {
+      await sendPasswordResetSMS(user.phone, `http://localhost:5173/reset-password/${resetToken}`);
+    }
+
+    return res.status(200).json({ success: true, message: "Password reset instructions sent." });
+  } catch (error) {
+    console.log("Error in forgotPassword:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Some internal error occurred.",
+    });
+  }
+};
+
 
 
   const resetPassword = async (req, res) => {
@@ -401,7 +426,7 @@ const registerUser = async (req, res) => {
 
       await sendResetSuccessEmail(user.email);
 
-      return res.status(200).json({ success: true, message: "Password has been reset successfully" });
+      return res.status(200).json({ success: true, message: "Password has been reset successfully, redirecting to login..." });
     } catch (error) {
       console.log(error);
       return res.status(500).json({

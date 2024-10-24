@@ -22,7 +22,6 @@ const ResetPasswordPage = ({setShowLogin}) => {
 		}
 		try {
 			await resetPassword(token, password);
-			toast.success("Password reset successfully, redirecting to login page...");
 			setTimeout(() => {
 				navigate("/");
 				setShowLogin(true);

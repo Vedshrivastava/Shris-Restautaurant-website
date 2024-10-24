@@ -26,6 +26,31 @@ export const sendVerificationSMS = async (phone, verificationToken) => {
     }
 }
 
+export const sendPasswordResetSMS = async (phone, resetLink) => {
+    console.log('reset link sms---->',resetLink)
+    const message = `Your password reset link is: ${resetLink}`;
+
+    try {
+        // Ensure that the "From" number is not the same as the "To" number
+        if (phone === TWILIO_PHONE_NUMBER) {
+            throw new Error('The "To" and "From" numbers cannot be the same.');
+        }
+
+        console.log("From number:", TWILIO_PHONE_NUMBER);
+        const response = await smsClient.messages.create({
+            from: TWILIO_PHONE_NUMBER,
+            to: phone,
+            body: message
+        });
+
+        console.log("Password reset SMS sent successfully", response);
+    } catch (error) {
+        console.error(`Error sending password reset SMS`, error);
+        throw new Error(`Error Sending Password Reset SMS: ${phone}`);
+    }
+};
+
+
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     

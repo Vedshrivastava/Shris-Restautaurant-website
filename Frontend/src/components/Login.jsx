@@ -56,28 +56,28 @@ const Login = ({ setShowLogin }) => {
 
     const handleSignup = async (data, type) => {
         if (currState === "signUp") {
-          try {
-            const response = await signup(data.email, data.password, data.name, data.phone, type);
-      
-            // If signup failed, check the response and handle accordingly
-            if (!response.data.success) {
-              // Optionally, handle any non-toast-based error logic here
-              return; // Exit the function if signup was unsuccessful
+            try {
+                const response = await signup(data.email, data.password, data.name, data.phone, type);
+
+                // If signup failed, check the response and handle accordingly
+                if (!response.data.success) {
+                    // Optionally, handle any non-toast-based error logic here
+                    return; // Exit the function if signup was unsuccessful
+                }
+
+                // If signup was successful, update the UI state
+                setShowLogin(false);
+                setCurrState('Login');
+                navigate('/verify'); // Redirect to verify page
+            } catch (error) {
+                // Optionally handle errors if signup itself fails (e.g., network issues)
+                toast.error(error.message || 'Error during signup.');
+                console.error("Sign-up error: ", error); // Log the error for debugging
             }
-      
-            // If signup was successful, update the UI state
-            setShowLogin(false);
-            setCurrState('Login');
-            navigate('/verify'); // Redirect to verify page
-          } catch (error) {
-            // Optionally handle errors if signup itself fails (e.g., network issues)
-            toast.error(error.message || 'Error during signup.');
-            console.error("Sign-up error: ", error); // Log the error for debugging
-          }
         }
-      };
-      
-    
+    };
+
+
 
     const onLogin = async (event) => {
         event.preventDefault();
@@ -138,7 +138,7 @@ const Login = ({ setShowLogin }) => {
             <form onSubmit={onLogin} className='login-container'>
                 <div className="login-title">
                     <h2>{currState === 'signUp' ? 'Sign Up with Email or phone' : currState}</h2>
-                    <img onClick={() => {setShowLogin(false); setCurrState('Login')}} src={assets.cross_icon} alt="Close" />
+                    <img onClick={() => { setShowLogin(false); setCurrState('Login') }} src={assets.cross_icon} alt="Close" />
                 </div>
                 <div className="login-inputs">
                     {currState === 'signUp' ? (
@@ -196,10 +196,21 @@ const Login = ({ setShowLogin }) => {
                     ) : currState === 'Forgot Password' ? (
                         <input
                             name='forgotInput'
-                            onChange={(e) => setForgotInput(e.target.value)}
+                            onChange={(e) => {
+                                const value = e.target.value;
+
+                                // Check if the input is purely numeric
+                                if (/^\d*$/.test(value)) {
+                                    // If input is numeric and has length > 0, prepend +91
+                                    setForgotInput(value ? `+91${value}` : '');
+                                } else {
+                                    // If input is an email or other characters, set it as is
+                                    setForgotInput(value);
+                                }
+                            }}
                             value={forgotInput}
                             type='text'
-                            placeholder={`Enter your ${signupMethod === 'phone' ? 'Phone Number' : 'Email'} for reset`}
+                            placeholder={`Enter your Email or Phone for reset`}
                             required
                         />
                     ) : (
