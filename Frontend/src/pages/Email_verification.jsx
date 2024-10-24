@@ -48,9 +48,12 @@ const EmailVerificationPage = () => {
         e.preventDefault();
         const verificationCode = code.join("");
         try {
-            await verifyEmail(verificationCode);
+            const response = await verifyEmail(verificationCode);
             navigate("/");
+            if(response.data.user.signupMethod === 'email')
             toast.success("Email verified successfully");
+            else if(response.data.user.signupMethod === 'phone')
+            toast.success("phone number verified successfully");
         } catch (error) {
             console.log(error);
         }

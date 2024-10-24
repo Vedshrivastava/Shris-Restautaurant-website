@@ -28,6 +28,7 @@ const StoreContextProvider = (props) => {
   const [operationType, setOperationType] = useState(null);
   const [currentItemId, setCurrentItemId] = useState(null);
   const [currentQuantity, setCurrentQuantity] = useState(null);
+  const [currState, setCurrState] = useState("Login");
 
   const logout = () => {
     setToken(null); 
@@ -65,7 +66,7 @@ const StoreContextProvider = (props) => {
         console.error("Error adding item to cart:", error);
       }
     } else {
-      toast.warning("Please log in to add items to your cart.");
+      toast.error("Please log in first or login again.");
     }
   };
 
@@ -202,7 +203,6 @@ const StoreContextProvider = (props) => {
         return newCartItems;
       });
     } else {
-      toast.error("Please Login again.");
       console.log(success);
     }
   };
@@ -281,6 +281,8 @@ const StoreContextProvider = (props) => {
     userName,
     userEmail,
     isLoggedIn,
+    currState,
+    setCurrState,
     setIsLoggedIn,
     setToken,
     setUserId,

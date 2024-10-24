@@ -81,6 +81,41 @@
     font-weight: bold; /* Make it bold */
 }
 
+.signup-method-texts {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column; /* Stack them vertically */
+    gap: 10px; /* Space between the spans */
+    width: 100%; /* Ensure they cover the whole width */
+}
+
+.signup-method-texts span {
+    background-color: tomato; /* Tomato background */
+    color: white !important; /* White text color */
+    text-decoration: none !important;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px; /* Button-like padding */
+    border-radius: 5px; /* Rounded corners */
+    border: none; /* Remove any border */
+    display: block; /* Make it block-level to cover the whole width */
+    width: 100%; /* Ensure it covers 100% of the container width */
+    text-align: center; /* Center the text */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    margin: auto !important;
+}
+
+.signup-method-texts span:hover {
+    background-color: darkred; /* Darker color on hover */
+}
+
+.signup-method-texts span.disabled {
+    background-color: gray; /* Gray background for disabled state */
+    cursor: default;
+    color: #ccc !important; /* Lighter text for disabled state */
+}
+
+
 
 @media (max-width: 480px) {
 

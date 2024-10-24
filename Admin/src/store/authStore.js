@@ -34,7 +34,7 @@ export const useAuthStore = create((set) => ({
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`http://localhost:4000/api/admin/verify-email`, { code });
+            const response = await axios.post(`http://localhost:4000/api/admin/verify`, { code });
             const { user } = response.data;
             
             // Save user data in localStorage

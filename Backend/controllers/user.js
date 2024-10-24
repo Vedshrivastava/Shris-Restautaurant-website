@@ -2,20 +2,21 @@ import userModel from "../models/user.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import crypto from 'crypto';
-import { sendVerificationEmail, sendWelcomeEmail, sendResetSuccessEmail, sendPasswordResetEmail } from "../middlewares/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail, sendResetSuccessEmail, sendPasswordResetEmail, sendVerificationSMS } from "../middlewares/emails.js";
 import {
   signTokenForConsumer,
 } from "../middlewares/index.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, phone, password } = req.body;
 
   try {
-    // Find user by email
-    const user = await userModel.findOne({ email });
+    // Check if either email or phone is provided
+    const user = await userModel.findOne({
+      $or: [{ email }, { phone }],
+    });
 
-    // Check if user exists
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -23,10 +24,8 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Compare provided password with stored password
     const isMatch = await bcrypt.compare(password, user.password);
 
-    // Check if password matches
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -34,17 +33,14 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Prepare token data
     const tokenData = {
       id: user._id,
       name: user.name,
       email: user.email,
     };
 
-    // Generate token for the user
     const token = await signTokenForConsumer(tokenData);
 
-    // Check if the token was generated
     if (token) {
       return res.status(200).json({
         success: true,
@@ -56,7 +52,7 @@ const loginUser = async (req, res) => {
         message: "Logged in successfully",
         user: {
           ...user._doc,
-          password: undefined, // Exclude password
+          password: undefined, // Exclude password from response
         },
       });
     } else {
@@ -75,7 +71,8 @@ const loginUser = async (req, res) => {
 };
 
 
-const verifyEmail = async (req, res) => {
+
+const verifyCode = async (req, res) => {
 
   const { code } = req.body;
 
@@ -94,16 +91,27 @@ const verifyEmail = async (req, res) => {
     user.verificationTokenExpiresAt = undefined;
     await user.save();
 
-    await sendWelcomeEmail(user.email, user.name);
+    if (user.email) {
+      await sendWelcomeEmail(user.email, user.name);
 
-    return res.json({
-      success: true,
-      user: {
-        ...user._doc,
-        password: undefined
-      },
-      message: "Email verified successfully",
-    });
+      return res.json({
+        success: true,
+        user: {
+          ...user._doc,
+          password: undefined
+        },
+        message: "Email verified successfully",
+      });
+    } else if (user.phone) {
+      return res.json({
+        success: true,
+        user: {
+          ...user._doc,
+          password: undefined
+        },
+        message: "User verified successfully",
+      });
+    }
 
   } catch (error) {
     console.log(error);
@@ -114,145 +122,310 @@ const verifyEmail = async (req, res) => {
   }
 }
 
+const verifyUser = async (req, res) => {
+  const { userId, verifyType } = req.body;
+
+  try {
+    // Find the user by userId
+    const user = await userModel.findById(userId);
+
+    // Check if the user exists
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Check if the user is already verified
+    if (user.isVerified) {
+      return res.json({
+        success: false,
+        message: "User is already verified.",
+      });
+    }
+
+    // Check the verification type (email or phone)
+    if (verifyType === "email") {
+      // Validate email
+      if (!user.email) {
+        return res.json({
+          success: false,
+          message: "No email is associated with this user.",
+        });
+      }
+
+      // Generate a new verification code
+      const verificationCode = generateVerificationCode();
+      user.verificationToken = verificationCode;
+      user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
+
+      // Save the user with updated verification details
+      await user.save();
+
+      // Send verification email
+      await sendVerificationEmail(user.email, verificationCode);
+
+      return res.json({
+        success: true,
+        message: "Verification email sent.",
+        user
+      });
+    } else if (verifyType === "phone") {
+      // Validate phone number
+      if (!user.phone) {
+        return res.json({
+          success: false,
+          message: "No phone number is associated with this user.",
+        });
+      }
+
+      // Generate a new verification code
+      const verificationCode = generateVerificationCode();
+      user.verificationToken = verificationCode;
+      user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
+
+      // Save the user with updated verification details
+      await user.save();
+
+      // Send verification SMS
+      await sendVerificationSMS(user.phone, verificationCode);
+
+      return res.json({
+        success: true,
+        message: "Verification SMS sent.",
+      });
+    } else {
+      // If the verifyType is neither email nor phone
+      return res.json({
+        success: false,
+        message: "Invalid verification type. Please use 'email' or 'phone'.",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      success: false,
+      message: "An error occurred during the verification process.",
+    });
+  }
+};
 
 const registerUser = async (req, res) => {
-  const { name, password, email } = req.body;
-  try {
-    const exists = await userModel.findOne({ email });
-    if (exists) {
-      return res.json({ success: false, message: "User Already Exists" });
-    }
-    console.log("Email:", email);
+  const { name, password, email, phone, type } = req.body;
+  console.log(req.body);
 
-    if (!validator.isEmail(email)) {
+  try {
+    // Check if a user exists with the given email or phone number
+    const existingUser = await userModel.findOne({
+      $or: [{ email }, { phone }]
+    });
+
+    if (existingUser) {
+      if (!existingUser.isVerified) {
+        // Remove the unverified user from the database
+        await userModel.deleteOne({ _id: existingUser._id });
+        console.log(`Unverified user with email ${email} or phone ${phone} has been removed from the database.`);
+      } else {
+        // If the user is verified, inform that the user already exists
+        return res.json({
+          success: false,
+          message: "User already exists with this email or phone.",
+        });
+      }
+    }
+
+    // Validate the input based on the signup type
+    if (type === "email" && email) {
+      // Validate email format
+      if (!validator.isEmail(email)) {
+        return res.json({
+          success: false,
+          message: "Please enter a valid email.",
+        });
+      }
+
+      // Validate password length
+      if (password.length < 8) {
+        return res.json({
+          success: false,
+          message: "The password must be at least 8 characters long.",
+        });
+      }
+
+      // Generate verification code and hash the password
+      const verificationCode = generateVerificationCode();
+      const salt = await bcrypt.genSalt(10);
+      const hashedPass = await bcrypt.hash(password, salt);
+
+      // Create a new user
+      const newUser = new userModel({
+        name,
+        email,
+        phone,
+        password: hashedPass,
+        verificationToken: verificationCode,
+        verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+        signupMethod: "email",
+      });
+
+      const user = await newUser.save();
+
+      // Send verification email
+      await sendVerificationEmail(email, verificationCode);
+
       return res.json({
-        success: false,
-        message: "Please Enter a valid email",
+        success: true,
+        userId: user._id,
+        message: "Account created with email.",
+        user: {
+          ...user._doc,
+          password: undefined,
+        },
+      });
+    } 
+    else if (type === "phone" && phone) {
+      // Validate phone number format
+      if (!validator.isMobilePhone(phone, 'any')) {
+        return res.json({
+          success: false,
+          message: "Please enter a valid phone number.",
+        });
+      }
+
+      // Validate password length
+      if (password.length < 8) {
+        return res.json({
+          success: false,
+          message: "The password must be at least 8 characters long.",
+        });
+      }
+
+      // Generate verification code and hash the password
+      const verificationCode = generateVerificationCode();
+      const salt = await bcrypt.genSalt(10);
+      const hashedPass = await bcrypt.hash(password, salt);
+
+      // Create a new user
+      const newUser = new userModel({
+        name,
+        phone,
+        email,
+        password: hashedPass,
+        verificationToken: verificationCode,
+        verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+        signupMethod: "phone",
+      });
+
+      const user = await newUser.save();
+
+      // Send verification SMS
+      await sendVerificationSMS(phone, verificationCode);
+
+      return res.json({
+        success: true,
+        userId: user._id,
+        message: "Account successfully created with phone number.",
+        user: {
+          ...user._doc,
+          password: undefined,
+        },
       });
     }
 
-    if (password.length < 8) {
-      return res.json({
+    return res.json({
+      success: false,
+      message: "Please provide either an email or a phone number.",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      message: "Some internal error occurred.",
+    });
+  }
+};
+
+
+  const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+      const user = await userModel.findOne({ email });
+
+      if (!user) {
+        return res.status(400).json({ success: false, message: "Invalid request" });
+      }
+
+      const resetToken = crypto.randomBytes(20).toString('hex');
+      console.log("Reset Token : ", resetToken);
+      const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
+
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordTokenExpiresAt = resetTokenExpiresAt;
+
+      await user.save();
+
+      await sendPasswordResetEmail(user.email, `http://localhost:5173/reset-password/${resetToken}`);
+
+      return res.status(200).json({ success: true, message: "Password reset email sent" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
         success: false,
-        message: "The password must be at least 8 digits long.",
+        message: "Some Internal Error Occurred",
       });
     }
-
-    const verificationCode = generateVerificationCode();
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
-
-    const newUser = new userModel({
-      name: name,
-      email: email,
-      password: hashedPass,
-      verificationToken: verificationCode,
-      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
-    });
-
-    const user = await newUser.save();
-
-    await sendVerificationEmail(email, verificationCode);
+  };
 
 
-    return res.json({
-      success: true,
-      userId: user._id,
-      message: "Account Created",
-      user:{
-        ...user._doc,
-        password: undefined
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    return res.json({
-      success: false,
-      message: "Some Internal Error Occurred",
-    });
-  }
-};
+  const resetPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
 
-const forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  try {
-    const user = await userModel.findOne({ email });
+    try {
+      const user = await userModel.findOne({
+        resetPasswordToken: token,
+        resetPasswordTokenExpiresAt: { $gt: Date.now() }
+      });
 
-    if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid request" });
+      if (!user) {
+        return res.status(400).json({ success: false, message: "Invalid request" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      user.password = hashedPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordTokenExpiresAt = undefined;
+      await user.save();
+
+      await sendResetSuccessEmail(user.email);
+
+      return res.status(200).json({ success: true, message: "Password has been reset successfully" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: "Some Internal Error Occurred",
+      });
     }
+  };
 
-    const resetToken = crypto.randomBytes(20).toString('hex');
-    console.log("Reset Token : ", resetToken);
-    const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
+  const checkAuth = async (req, res) => {
+    try {
+      const user = await userModel.findById(req.userId).select("-password"); //- so that the password is unselected so we do not need to set the pass as undefined.
 
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordTokenExpiresAt = resetTokenExpiresAt;
+      if (!user) return res.status(400).json({ success: false, message: "User not found" });
 
-    await user.save();
+      res.status(200).json({ success: true, user });
 
-    await sendPasswordResetEmail(user.email, `http://localhost:5173/reset-password/${resetToken}`);
-    
-    return res.status(200).json({ success: true, message: "Password reset email sent" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Some Internal Error Occurred",
-    });
-  }
-};
-
-
-const resetPassword = async (req, res) => {
-  const { token } = req.params;
-  const { password } = req.body;
-
-  try {
-    const user = await userModel.findOne({
-      resetPasswordToken: token,
-      resetPasswordTokenExpiresAt: { $gt: Date.now() }
-    });
-
-    if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid request" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordTokenExpiresAt = undefined;
-    await user.save();
-
-    await sendResetSuccessEmail(user.email);
-
-    return res.status(200).json({ success: true, message: "Password has been reset successfully" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Some Internal Error Occurred",
-    });
   }
-};
 
-const checkAuth = async (req, res) => {
-  try {
-    const user = await userModel.findById(req.userId).select("-password"); //- so that the password is unselected so we do not need to set the pass as undefined.
-    
-    if(!user) return res.status(400).json({ success: false, message: "User not found" });
-
-    res.status(200).json({success: true, user });
-
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-}
-
-export { loginUser, registerUser, verifyEmail, forgotPassword, resetPassword, checkAuth };
+  export { loginUser, registerUser, verifyCode, forgotPassword, resetPassword, checkAuth, verifyUser };

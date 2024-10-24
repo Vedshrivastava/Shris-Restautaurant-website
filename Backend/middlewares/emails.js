@@ -1,7 +1,31 @@
 import { MailtrapClient } from "mailtrap"
 import { mailtrapClient, sender } from "./mailtrap.js"
 import { PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE } from "./emailTemplates.js"
-import userModel from "../models/user.js"
+import { smsClient, TWILIO_PHONE_NUMBER } from '../middlewares/twilio.js'; 
+
+export const sendVerificationSMS = async (phone, verificationToken) => {
+    const message = `Your verification code is: ${verificationToken}`;
+
+    try {
+        // Ensure that the "From" number is not the same as the "To" number
+        if (phone === TWILIO_PHONE_NUMBER) {
+            throw new Error('The "To" and "From" numbers cannot be the same.');
+        }
+
+        console.log("phone no.====>>>", TWILIO_PHONE_NUMBER)
+        const response = await smsClient.messages.create({
+            from: TWILIO_PHONE_NUMBER, 
+            to: phone,                 
+            body: message              
+        });
+
+        console.log("Verification SMS sent successfully", response);
+    } catch (error) {
+        console.error(`Error sending verification SMS`, error);
+        throw new Error(`Error Sending Verification SMS: ${phone}`);
+    }
+}
+
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     

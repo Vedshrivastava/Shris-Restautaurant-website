@@ -72,6 +72,7 @@ const Search = ({ setShowSearch }) => {
                                     description={item.description}
                                     price={item.price}
                                     image={item.image}
+                                    inStock={item.inStock}
                                 />
                             ))}
                         </div>
